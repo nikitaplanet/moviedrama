@@ -43,7 +43,13 @@ async function submit() {
 			<form class="card flex flex-col gap-4 p-6" @submit.prevent="submit">
 				<div class="flex flex-col gap-1">
 					<label class="field-label">Email</label>
-					<input v-model="email" class="field-input" autocomplete="email" placeholder="you@example.com" required type="email" />
+					<input
+						v-model="email"
+						class="field-input"
+						autocomplete="email"
+						placeholder="you@example.com"
+						required
+						type="email" />
 				</div>
 
 				<div class="flex flex-col gap-1">

@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import type { Entry } from '../types'
 
 const entries = ref<Entry[]>([])
+const publicEntries = ref<Entry[]>([])
 const loading = ref(false)
 
 function toEntry(row: Record<string, unknown>): Entry {
@@ -29,6 +30,15 @@ export function useRanking() {
       .order('rank_order', { ascending: true })
     entries.value = (data ?? []).map(toEntry)
     loading.value = false
+  }
+
+  async function loadPublic(uid: string) {
+    const { data } = await supabase
+      .from('ranking_entries')
+      .select('*')
+      .eq('user_id', uid)
+      .order('rank_order', { ascending: true })
+    publicEntries.value = (data ?? []).map(toEntry)
   }
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
@@ -83,5 +93,5 @@ export function useRanking() {
     await Promise.all(updates)
   }
 
-  return { entries, loading, load, add, remove, update, syncOrder }
+  return { entries, publicEntries, loading, load, loadPublic, add, remove, update, syncOrder }
 }

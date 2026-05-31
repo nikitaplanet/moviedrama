@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import type { Entry } from '../types'
 
 const entries = ref<Entry[]>([])
+const publicEntries = ref<Entry[]>([])
 const loading = ref(false)
 
 function toEntry(row: Record<string, unknown>): Entry {
@@ -29,6 +30,15 @@ export function useWatchlist() {
       .order('created_at', { ascending: true })
     entries.value = (data ?? []).map(toEntry)
     loading.value = false
+  }
+
+  async function loadPublic(uid: string) {
+    const { data } = await supabase
+      .from('watchlist_entries')
+      .select('*')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: true })
+    publicEntries.value = (data ?? []).map(toEntry)
   }
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
@@ -65,13 +75,13 @@ export function useWatchlist() {
     if (patch.country  !== undefined) payload.country  = patch.country
     if (patch.status   !== undefined) payload.status   = patch.status
     if (patch.rating   !== undefined) payload.rating   = patch.rating
-    if (patch.note     !== undefined) payload.note      = patch.note
-    if (patch.year     !== undefined) payload.year      = patch.year ?? null
+    if (patch.note     !== undefined) payload.note     = patch.note
+    if (patch.year     !== undefined) payload.year     = patch.year ?? null
 
     await supabase.from('watchlist_entries').update(payload).eq('id', id)
     const i = entries.value.findIndex(e => e.id === id)
     if (i !== -1) entries.value[i] = { ...entries.value[i], ...patch }
   }
 
-  return { entries, loading, load, add, remove, update }
+  return { entries, publicEntries, loading, load, loadPublic, add, remove, update }
 }

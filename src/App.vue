@@ -21,7 +21,7 @@ watch(user, async (u) => {
   }
 }, { immediate: true })
 
-const isReadonly = () => !!(route.query.data)
+const isReadonly = () => !!(route.query.uid)
 
 async function handleSignOut() {
   await signOut()

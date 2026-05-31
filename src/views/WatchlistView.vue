@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import { Icon } from '@iconify/vue'
-import type { Entry, EntryStatus, FilterState, ShareData } from '../types'
+import type { Entry, EntryStatus, FilterState } from '../types'
 import { STATUSES } from '../types'
 import { useWatchlist } from '../composables/useWatchlist'
 import { useShare } from '../composables/useShare'
 import { useFilters } from '../composables/useFilters'
+import { useAuth } from '../composables/useAuth'
 import EntryCard from '../components/molecules/EntryCard.vue'
 import AddEntryForm from '../components/molecules/AddEntryForm.vue'
 import FilterBar from '../components/molecules/FilterBar.vue'
@@ -17,22 +18,21 @@ import EmptyState from '../components/organisms/EmptyState.vue'
 import AppPageHeader from '../components/organisms/AppPageHeader.vue'
 
 const route = useRoute()
-const { decode } = useShare()
-const { entries, add, remove, update } = useWatchlist()
+const { user } = useAuth()
+const { entries, publicEntries, add, remove, update, loadPublic } = useWatchlist()
 const { filters, isReadonly, updateFilters } = useFilters()
 
-const sharedData = computed<ShareData | null>(() =>
-  isReadonly.value ? decode(route.query.data as string) : null
-)
+const uid = computed(() => route.query.uid as string | undefined)
 
-const activeFilters = computed<FilterState>(() =>
-  isReadonly.value
-    ? (sharedData.value?.filters ?? { category: '', country: '', status: '' })
-    : filters.value
-)
+watchEffect(async () => {
+  if (uid.value) await loadPublic(uid.value)
+  else publicEntries.value = []
+})
+
+const activeFilters = computed<FilterState>(() => filters.value)
 
 const sourceEntries = computed<Entry[]>(() =>
-  isReadonly.value ? (sharedData.value?.entries ?? []) : entries.value
+  isReadonly.value ? publicEntries.value : entries.value
 )
 
 // --- search + sort ---
@@ -115,12 +115,6 @@ const categoryCounts = computed(() => {
   return c
 })
 
-const shareData = computed<ShareData>(() => ({
-  tab: 'watchlist',
-  entries: entries.value,
-  filters: filters.value,
-}))
-
 const showAddForm = ref(false)
 const urlCopied = ref(false)
 
@@ -130,12 +124,11 @@ function handleAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
 }
 
 async function copyUrl() {
+  if (!user.value) return
   const { copy } = useShare()
-  await copy(shareData.value)
+  await copy('watchlist', user.value.id)
   urlCopied.value = true
-  setTimeout(() => {
-    urlCopied.value = false
-  }, 2000)
+  setTimeout(() => { urlCopied.value = false }, 2000)
 }
 </script>
 

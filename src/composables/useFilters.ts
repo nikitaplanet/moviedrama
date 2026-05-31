@@ -12,22 +12,22 @@ export function useFilters() {
     status:   (route.query.status   as EntryStatus | '')   || '',
   }))
 
-  const isReadonly = computed(() => !!route.query.data)
+  const isReadonly = computed(() => !!route.query.uid)
 
   function updateFilters(next: Partial<FilterState>) {
     router.replace({
       query: {
         ...route.query,
-        category: (next.category  ?? filters.value.category)  || undefined,
-        country:  (next.country   ?? filters.value.country)   || undefined,
-        status:   (next.status    ?? filters.value.status)    || undefined,
+        category: (next.category ?? filters.value.category) || undefined,
+        country:  (next.country  ?? filters.value.country)  || undefined,
+        status:   (next.status   ?? filters.value.status)   || undefined,
       },
     })
   }
 
   function clearFilters() {
-    const { data } = route.query
-    router.replace({ query: data ? { data } : {} })
+    const { uid } = route.query
+    router.replace({ query: uid ? { uid } : {} })
   }
 
   return { filters, isReadonly, updateFilters, clearFilters }

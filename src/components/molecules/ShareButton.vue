@@ -1,16 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
-import type { ShareData } from '../../types'
 import { useShare } from '../../composables/useShare'
 import AppButton from '../atoms/AppButton.vue'
 
-const props = defineProps<{ data: ShareData }>()
+const props = defineProps<{ tab: 'watchlist' | 'ranking'; userId: string }>()
 const { copy } = useShare()
 const copied = ref(false)
 
 async function handle() {
-  const ok = await copy(props.data)
+  const ok = await copy(props.tab, props.userId)
   if (ok) {
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)

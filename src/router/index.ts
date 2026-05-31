@@ -17,6 +17,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   if (!to.meta.requiresAuth) return true
+  if (to.query.uid) return true  // public share link, no auth needed
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) return { name: 'login' }
   return true

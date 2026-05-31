@@ -1,32 +1,16 @@
-import type { ShareData } from '../types'
-
 export function useShare() {
-  function encode(data: ShareData): string {
-    return btoa(encodeURIComponent(JSON.stringify(data)))
+  function buildUrl(tab: 'watchlist' | 'ranking', userId: string): string {
+    return new URL(`/${tab}?uid=${userId}`, window.location.origin).toString()
   }
 
-  function decode(encoded: string): ShareData | null {
+  async function copy(tab: 'watchlist' | 'ranking', userId: string): Promise<boolean> {
     try {
-      return JSON.parse(decodeURIComponent(atob(encoded))) as ShareData
-    } catch {
-      return null
-    }
-  }
-
-  function buildUrl(data: ShareData): string {
-    const url = new URL(`/${data.tab}`, window.location.origin)
-    url.searchParams.set('data', encode(data))
-    return url.toString()
-  }
-
-  async function copy(data: ShareData): Promise<boolean> {
-    try {
-      await navigator.clipboard.writeText(buildUrl(data))
+      await navigator.clipboard.writeText(buildUrl(tab, userId))
       return true
     } catch {
       return false
     }
   }
 
-  return { encode, decode, buildUrl, copy }
+  return { buildUrl, copy }
 }
