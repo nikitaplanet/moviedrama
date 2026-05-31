@@ -119,7 +119,7 @@
 }
 .field select,
 .field input {
-  @apply w-full h-11 appearance-none border-0 bg-transparent text-[var(--ink)] outline-none;
+  @apply w-full appearance-none border-0 bg-transparent text-[var(--ink)] outline-none;
   font:
     400 14px/1 'Noto Sans TC',
     'Lato',
