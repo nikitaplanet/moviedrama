@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm exec *)",
+      "Bash(pnpm dev *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(curl -s http://localhost:5174/)",
+      "Bash(gunzip -c \"/Users/nikitamacbook/.claude/projects/-Users-nikitamacbook-Documents-Frontend-moviedrama/a6e7be6f-9856-41b5-a690-201a846f099c/tool-results/webfetch-1780164246989-1r9gf3.bin\")",
+      "Bash(tar -x -O untitled/project/index.html)",
+      "Bash(tar -x -O untitled/project/app/components.jsx)",
+      "Bash(tar -x -O untitled/project/app/watchlist.jsx)",
+      "Bash(tar -x -O untitled/project/app/ranking.jsx)",
+      "Bash(tar -x -O untitled/project/app/main.jsx)",
+      "Bash(tar -x -O untitled/project/app/data.jsx)",
+      "Bash(vercel --version)",
+      "Bash(git *)",
+      "Bash(vercel whoami *)",
+      "Bash(vercel link *)",
+      "Bash(vercel *)",
+      "Bash(pnpm run *)",
+      "Bash(curl -sI https://moviedrama-mld60kkq8-nikitaplanets-projects.vercel.app)",
+      "Bash(curl -sI https://moviedrama-iota.vercel.app)",
+      "Bash(pnpm build *)"
+    ]
+  }
+}

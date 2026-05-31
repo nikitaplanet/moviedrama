@@ -1,3 +1,430 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   Design tokens  (日系簡約 · The Reel List)
+   ============================================================ */
+:root {
+  --paper:     #F2EFE8;
+  --paper-2:   #E9E5DB;
+  --card:      #FBFAF5;
+  --card-2:    #F4F1E9;
+  --ink:       #26231E;
+  --ink-soft:  #7C766C;
+  --ink-faint: #ABA498;
+  --line:      #E5E0D5;
+  --line-2:    #D6D0C3;
+  --accent:    #B0473C;
+  --accent-2:  #97392f;
+  --accent-ink:#FBFAF5;
+  --sans:      "Zen Kaku Gothic New", "Noto Sans JP", ui-sans-serif, sans-serif;
+  --radius:    4px;
+}
+
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* ============================================================
+   Kicker (小標籤)
+   ============================================================ */
+.kicker {
+  font: 400 10px/1 var(--sans);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
+   Stars — dual-overlay technique
+   ============================================================ */
+.stars {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: "Times New Roman", serif;
+  letter-spacing: 2px;
+}
+.stars .bg { color: var(--line-2); }
+.stars .fg {
+  color: var(--accent);
+  position: absolute;
+  left: 0; top: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Status segmented control
+   ============================================================ */
+.seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.seg button {
+  appearance: none; border: 0; background: transparent; cursor: pointer; z-index: 2;
+  padding: 4px 4px 11px;
+  color: var(--ink-faint);
+  font: 400 14px/1.2 "Noto Serif TC", serif;
+  display: flex; align-items: baseline; justify-content: center; gap: 5px;
+  transition: color .2s; letter-spacing: .05em;
+}
+.seg button .sc { font: 400 10px/1 var(--sans); opacity: .8; }
+.seg button.on  { color: var(--ink); }
+.seg .glider {
+  position: absolute; bottom: -1px; height: 1.5px;
+  background: var(--accent);
+  transition: transform .26s cubic-bezier(.2,.8,.2,1), width .26s cubic-bezier(.2,.8,.2,1);
+  z-index: 3;
+}
+
+/* ============================================================
+   Category chips
+   ============================================================ */
+.chiprow {
+  display: flex; gap: 18px; overflow-x: auto; scrollbar-width: none;
+  padding: 4px 0 2px;
+}
+.chiprow::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; cursor: pointer;
+  border: 0; border-bottom: 1.5px solid transparent;
+  background: transparent; color: var(--ink-faint);
+  font: 400 14px/1 "Noto Serif TC", serif;
+  padding: 4px 1px 7px;
+  display: inline-flex; align-items: baseline; gap: 5px;
+  transition: .18s; white-space: nowrap; letter-spacing: .04em;
+}
+.chip:hover { color: var(--ink-soft); }
+.chip.on    { color: var(--ink); border-bottom-color: var(--accent); }
+.chip .cc   { font: 400 9px/1 var(--sans); opacity: .7; letter-spacing: .05em; }
+
+/* ============================================================
+   Form field
+   ============================================================ */
+.field {
+  position: relative; display: flex; align-items: center; gap: 9px;
+  border: 1px solid var(--line); border-radius: 3px; background: var(--card);
+  padding: 0 13px; height: 46px;
+}
+.field svg { flex: 0 0 auto; color: var(--ink-faint); }
+.field select, .field input {
+  appearance: none; border: 0; background: transparent; outline: none; width: 100%;
+  font: 400 14px/1 "Noto Serif TC", serif; color: var(--ink);
+}
+.field input::placeholder { color: var(--ink-faint); }
+.field.sel::after {
+  content: ""; position: absolute; right: 14px;
+  width: 6px; height: 6px; pointer-events: none;
+  border-right: 1.4px solid var(--ink-faint); border-bottom: 1.4px solid var(--ink-faint);
+  transform: translateY(-2px) rotate(45deg);
+}
+
+/* ============================================================
+   Film card — ticket style
+   ============================================================ */
+.ticket {
+  position: relative; background: var(--card);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  margin-bottom: 12px; padding: 17px 18px 15px;
+}
+.ticket .body  { position: relative; }
+.ticket .toprow {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 10px; margin-bottom: 9px;
+}
+.catpill {
+  font: 400 11px/1 var(--sans); color: var(--ink-soft); letter-spacing: .1em;
+  display: inline-flex; gap: 7px; align-items: baseline;
+}
+.catpill .ce { font: 400 9px/1 var(--sans); color: var(--ink-faint); letter-spacing: .14em; }
+.ctry {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 400 12px/1 "Noto Serif TC", serif; color: var(--ink-soft);
+}
+.ctry .fl { font-size: 14px; line-height: 1; }
+.ticket h3 {
+  margin: 0 0 3px; font: 500 20px/1.3 "Noto Serif TC", serif;
+  color: var(--ink); letter-spacing: .01em;
+}
+.ticket .ensub {
+  font: 400 9px/1 var(--sans); letter-spacing: .2em;
+  color: var(--ink-faint); text-transform: uppercase;
+}
+.ticket .midrow {
+  display: flex; align-items: center; gap: 12px;
+  margin: 12px 0 11px; flex-wrap: wrap;
+}
+.statuschip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 400 12px/1 "Noto Serif TC", serif; color: var(--ink-soft);
+}
+.statuschip i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.unrated { font: 400 12px/1 "Noto Serif TC", serif; color: var(--ink-faint); }
+.ticket .note {
+  font: 400 13px/1.65 "Noto Serif TC", serif; color: var(--ink-soft);
+  margin: 0; padding-top: 11px; border-top: 1px solid var(--line);
+}
+
+/* Lift effect when dragging */
+.ticket-lift { box-shadow: 0 14px 30px -12px rgba(38,35,30,.4); border-color: var(--accent); }
+
+/* ============================================================
+   Stat row — 3-column hairlines
+   ============================================================ */
+.statrow {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin: 16px 0 4px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.stat { position: relative; padding: 14px 6px 13px; text-align: center; }
+.stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 18%; bottom: 18%;
+  width: 1px; background: var(--line);
+}
+.stat .sv {
+  font: 400 27px/1 "Noto Serif TC", serif; color: var(--ink); letter-spacing: .02em;
+}
+.stat .sv.acc { color: var(--accent); }
+.stat .sl { font: 400 12px/1 "Noto Serif TC", serif; color: var(--ink-soft); margin-top: 6px; letter-spacing: .08em; }
+.stat .se { font: 400 7px/1 var(--sans); color: var(--ink-faint); letter-spacing: .2em; margin-top: 4px; text-transform: uppercase; }
+
+/* ============================================================
+   Medal & rank number
+   ============================================================ */
+.medal {
+  position: relative; width: 34px; height: 34px; flex: 0 0 34px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font: 400 14px/1 "Noto Serif TC", serif;
+}
+.medal.g { color: var(--accent);    box-shadow: inset 0 0 0 1.5px var(--accent); }
+.medal.s { color: var(--ink);       box-shadow: inset 0 0 0 1.5px var(--ink-soft); }
+.medal.b { color: var(--ink-soft);  box-shadow: inset 0 0 0 1.5px var(--ink-faint); }
+.ranknum {
+  width: 34px; flex: 0 0 34px; text-align: center;
+  font: 400 16px/1 "Noto Serif TC", serif; color: var(--ink-faint);
+}
+
+/* ============================================================
+   Rank row
+   ============================================================ */
+.rankrow {
+  display: flex; align-items: center; gap: 14px;
+  background: transparent; border-bottom: 1px solid var(--line);
+  padding: 16px 2px; transition: background .15s, transform .12s, box-shadow .12s;
+}
+.rankrow:first-child { border-top: 1px solid var(--line); }
+.rankrow.lift {
+  background: var(--card); border-radius: 4px; transform: scale(1.015);
+  position: relative; z-index: 5;
+  box-shadow: 0 14px 30px -12px rgba(38,35,30,.4); border-color: transparent;
+}
+.rk-body { flex: 1 1 auto; min-width: 0; }
+.rk-top  { display: flex; align-items: baseline; gap: 8px; }
+.rk-top h4 {
+  margin: 0; font: 500 17px/1.2 "Noto Serif TC", serif; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .01em;
+}
+.rk-flag { font-size: 14px; flex: 0 0 auto; }
+.rk-meta { display: flex; align-items: center; gap: 10px; margin-top: 7px; flex-wrap: wrap; }
+.rk-meta .catpill { color: var(--ink-faint); }
+.rk-en   { font-size: 9px; color: var(--ink-faint); letter-spacing: .18em; text-transform: uppercase; }
+.rk-ctrl {
+  display: grid; grid-template-columns: auto auto; grid-auto-rows: auto;
+  gap: 3px 2px; align-items: center; flex: 0 0 auto;
+}
+.rk-arrow, .rk-del {
+  width: 26px; height: 24px; display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; color: var(--ink-faint); background: none; border: none; cursor: pointer;
+}
+.rk-arrow:hover:not(:disabled) { background: var(--paper-2); color: var(--ink); }
+.rk-arrow:disabled              { opacity: .22; cursor: not-allowed; }
+.rk-del:hover                   { background: rgba(176,71,60,.08); color: var(--accent); }
+.rk-handle {
+  grid-column: 1 / 3; display: flex; align-items: center; justify-content: center;
+  color: var(--ink-faint); cursor: grab; height: 16px; opacity: .6; touch-action: none;
+}
+.rk-handle:active { cursor: grabbing; opacity: 1; color: var(--ink); }
+
+/* ============================================================
+   Page header
+   ============================================================ */
+.pg-head  { padding: 10px 2px 10px; }
+.pg-kick  { margin-bottom: 12px; }
+.pg-title-row { display: flex; align-items: baseline; gap: 12px; }
+.pg-title {
+  margin: 0; font-weight: 500; font-size: 30px; line-height: 1;
+  color: var(--ink); letter-spacing: .02em; font-family: "Noto Serif TC", serif;
+}
+.pg-cn {
+  font: 400 19px/1 "Noto Serif TC", serif; color: var(--accent); letter-spacing: .12em;
+}
+.pg-sub {
+  margin: 12px 0 2px; font: 400 12px/1.6 "Noto Serif TC", serif;
+  color: var(--ink-soft); letter-spacing: .02em;
+}
+
+/* ============================================================
+   Desktop inline nav (below page title, md+)
+   ============================================================ */
+.desk-nav {
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+.desk-nav button {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  padding: 5px 20px 12px;
+  color: var(--ink-faint);
+  font: 400 15px/1.2 "Noto Serif TC", serif;
+  display: flex; align-items: baseline; gap: 5px;
+  transition: color .2s; letter-spacing: .08em;
+  position: relative;
+}
+.desk-nav button .te { font: 400 8px/1 var(--sans); letter-spacing: .24em; text-transform: uppercase; }
+.desk-nav button.on { color: var(--ink); }
+.desk-nav button.on::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 1.5px; background: var(--accent);
+}
+
+/* ============================================================
+   Bottom tabbar nav
+   ============================================================ */
+.tabbar {
+  background: rgba(242,239,232,.94); backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.tabbar button {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; color: var(--ink-faint); position: relative; padding: 12px 0 16px;
+}
+.tabbar button .tn { font: 500 16px/1 "Noto Serif TC", serif; letter-spacing: .14em; }
+.tabbar button .te { font: 400 8px/1 var(--sans); letter-spacing: .26em; text-transform: uppercase; }
+.tabbar button.on   { color: var(--ink); }
+.tabbar button.on .tn { color: var(--accent); }
+
+/* ============================================================
+   Add button / big button
+   ============================================================ */
+.add-btn {
+  width: 100%; appearance: none; cursor: pointer; background: transparent;
+  border: 1px solid var(--line-2); border-radius: 3px; padding: 15px;
+  color: var(--ink-soft); font: 400 14px/1 "Noto Serif TC", serif;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  transition: .18s; letter-spacing: .04em;
+}
+.add-btn:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+.big-btn {
+  width: 100%; appearance: none; cursor: pointer;
+  border: 1px solid var(--ink); border-radius: 3px; padding: 14px;
+  background: var(--ink); color: var(--paper);
+  font: 400 14px/1 "Noto Serif TC", serif; letter-spacing: .08em;
+}
+.big-btn:disabled { opacity: .35; cursor: not-allowed; }
+.big-btn:hover:not(:disabled) { background: #322e28; }
+
+/* ============================================================
+   Share panel
+   ============================================================ */
+.share {
+  margin-top: 26px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 4px; padding: 20px 18px;
+}
+.share-head           { margin-bottom: 14px; }
+.share-head .kicker   { color: var(--ink-faint); }
+.share-head h3 {
+  margin: 8px 0 0; color: var(--ink);
+  font: 500 18px/1 "Noto Serif TC", serif; letter-spacing: .04em;
+}
+.share-box {
+  margin: 0 0 14px; background: var(--card-2);
+  border: 1px solid var(--line); border-radius: 3px; padding: 14px;
+  color: var(--ink-soft); font: 400 11.5px/1.85 var(--sans);
+  white-space: pre-wrap; word-break: break-word;
+  max-height: 184px; overflow-y: auto; letter-spacing: .02em; scrollbar-width: none;
+}
+.share-box::-webkit-scrollbar { width: 0; }
+.copy-btn {
+  width: 100%; appearance: none; cursor: pointer;
+  border: 1px solid var(--ink); border-radius: 3px; padding: 14px;
+  background: var(--ink); color: var(--paper);
+  font: 400 14px/1 "Noto Serif TC", serif; letter-spacing: .08em;
+  display: flex; align-items: center; justify-content: center; gap: 9px; transition: .2s;
+}
+.copy-btn:hover { background: #322e28; }
+.copy-btn.ok    { background: var(--accent); border-color: var(--accent); }
+
+/* ============================================================
+   Bottom sheet (add entry)
+   ============================================================ */
+.sheet-wrap {
+  position: fixed; inset: 0; z-index: 60; background: rgba(38,35,30,.32);
+  display: flex; align-items: flex-end;
+  animation: sheet-fade .2s;
+}
+@keyframes sheet-fade { from { opacity: 0; } }
+.sheet {
+  width: 100%; background: var(--paper); border-radius: 18px 18px 0 0;
+  padding: 12px 22px 40px; max-height: 82vh;
+  display: flex; flex-direction: column;
+  animation: sheet-rise .26s cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 -8px 36px rgba(38,35,30,.22);
+}
+@keyframes sheet-rise { from { transform: translateY(100%); } }
+.sheet-grab {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--line-2); margin: 2px auto 16px;
+}
+.sheet-scroll { flex: 1 1 auto; overflow-y: auto; }
+.sheet-scroll::-webkit-scrollbar { width: 0; }
+.sheet-form {
+  display: flex; flex-direction: column; gap: 16px; padding-top: 4px;
+}
+.sheet-form label {
+  display: flex; flex-direction: column; gap: 8px;
+  font: 400 12px/1 "Noto Serif TC", serif; color: var(--ink-soft); letter-spacing: .05em;
+}
+.sheet-form input, .sheet-form select, .sheet-form textarea {
+  appearance: none; border: 1px solid var(--line-2); background: var(--card);
+  border-radius: 3px; padding: 12px 13px;
+  font: 400 14px/1.5 "Noto Serif TC", serif; color: var(--ink); outline: none;
+  resize: none;
+}
+.sheet-form input:focus,
+.sheet-form select:focus,
+.sheet-form textarea:focus { border-color: var(--accent); }
+.form-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.empty { text-align: center; padding: 50px 0; color: var(--ink-soft); }
+.empty-ic { font-size: 30px; opacity: .4; margin-bottom: 14px; }
+.empty p  { margin: 0 0 6px; font: 400 15px/1 "Noto Serif TC", serif; }
+.empty small { font: 400 10px/1 var(--sans); color: var(--ink-faint); letter-spacing: .2em; }
+
+/* ============================================================
+   Misc / resbar
+   ============================================================ */
+.resbar {
+  display: flex; align-items: center; justify-content: flex-start;
+  padding: 18px 2px 12px;
+  font: 400 10px/1 var(--sans); letter-spacing: .18em; color: var(--ink-faint);
+}
+
+/* Transitions */
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: all .22s ease; overflow: hidden;
+}
+.slide-down-enter-from, .slide-down-leave-to {
+  opacity: 0; max-height: 0; transform: translateY(-6px);
+}
+.slide-down-enter-to, .slide-down-leave-from {
+  opacity: 1; max-height: 700px;
+}
