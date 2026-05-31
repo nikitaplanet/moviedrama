@@ -16,7 +16,7 @@ import AppPageHeader from '../components/organisms/AppPageHeader.vue'
 
 const route = useRoute()
 const { decode } = useShare()
-const { entries, add, remove } = useRanking()
+const { entries, add, remove, update } = useRanking()
 const { filters, isReadonly, updateFilters } = useFilters()
 
 const sharedData = computed<ShareData | null>(() =>
@@ -108,15 +108,17 @@ function trueRank(entry: Entry) {
 
   <!-- Page header -->
   <AppPageHeader
-    kicker="My Ranking · 年度排行"
+    kicker="My Ranking · 我的排行"
     title="Top Picks"
     title-cn="排行"
   >
-    <p class="pg-sub">拖曳或用箭頭調整名次，前三名授予獎牌</p>
   </AppPageHeader>
 
   <!-- Add + Share toolbar -->
-  <div v-if="!isReadonly" class="mb-3 mt-4 flex items-center justify-between gap-3">
+  <div
+    v-if="!isReadonly"
+    class="mb-3 mt-2 flex items-center justify-between gap-3"
+  >
     <button
       class="add-btn"
       style="width: auto; padding: 10px 20px; flex: none"
@@ -185,6 +187,7 @@ function trueRank(entry: Entry) {
       @up="move(entry, -1)"
       @down="move(entry, 1)"
       @remove="remove(entry.id)"
+      @update="update(entry.id, $event)"
     />
   </VueDraggable>
 
@@ -201,6 +204,7 @@ function trueRank(entry: Entry) {
       @up="move(entry, -1)"
       @down="move(entry, 1)"
       @remove="remove(entry.id)"
+      @update="update(entry.id, $event)"
     />
   </div>
 
