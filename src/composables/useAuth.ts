@@ -16,9 +16,13 @@ supabase.auth.onAuthStateChange((_event, session) => {
 })
 
 export function useAuth() {
-  async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+  async function signIn(email: string, password: string): Promise<boolean> {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
     if (error) throw error
+    return true
   }
 
   async function signUp(email: string, password: string) {
