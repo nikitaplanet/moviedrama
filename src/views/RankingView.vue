@@ -16,7 +16,7 @@ import AppPageHeader from '../components/organisms/AppPageHeader.vue'
 
 const route = useRoute()
 const { decode } = useShare()
-const { entries, add, remove, update } = useRanking()
+const { entries, add, remove, update, syncOrder } = useRanking()
 const { filters, isReadonly, updateFilters } = useFilters()
 
 const sharedData = computed<ShareData | null>(() =>
@@ -77,13 +77,14 @@ async function copyUrl() {
   }, 2000)
 }
 
-function move(entry: Entry, dir: number) {
+async function move(entry: Entry, dir: number) {
   const i = entries.value.findIndex((e) => e.id === entry.id)
   const j = i + dir
   if (j < 0 || j >= entries.value.length) return
   const next = entries.value.slice()
   ;[next[i], next[j]] = [next[j], next[i]]
   entries.value = next
+  await syncOrder()
 }
 
 function trueRank(entry: Entry) {
@@ -176,6 +177,7 @@ function trueRank(entry: Entry) {
     :animation="200"
     handle=".drag-handle"
     class="rk-list mt-4"
+    @end="syncOrder"
   >
     <RankRow
       v-for="(entry, idx) in entries"
