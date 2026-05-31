@@ -20,45 +20,65 @@ const { entries, add, remove } = useRanking()
 const { filters, isReadonly, updateFilters } = useFilters()
 
 const sharedData = computed<ShareData | null>(() =>
-  isReadonly.value ? decode(route.query.data as string) : null,
+  isReadonly.value ? decode(route.query.data as string) : null
 )
 
 const activeFilters = computed<FilterState>(() =>
   isReadonly.value
     ? (sharedData.value?.filters ?? { category: '', country: '', status: '' })
-    : filters.value,
+    : filters.value
 )
 
 const sourceEntries = computed<Entry[]>(() =>
-  isReadonly.value ? (sharedData.value?.entries ?? []) : entries.value,
+  isReadonly.value ? (sharedData.value?.entries ?? []) : entries.value
 )
 
-const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country))
+const isFiltered = computed(
+  () => !!(activeFilters.value.category || activeFilters.value.country)
+)
 
 const displayEntries = computed(() =>
-  sourceEntries.value.filter(e => {
+  sourceEntries.value.filter((e) => {
     const f = activeFilters.value
     if (f.category && e.category !== f.category) return false
-    if (f.country  && e.country  !== f.country)  return false
+    if (f.country && e.country !== f.country) return false
     return true
-  }),
+  })
 )
 
 const categoryCounts = computed(() => {
-  const c: Record<string, number> = { '全部': sourceEntries.value.length }
-  sourceEntries.value.forEach(e => { c[e.category] = (c[e.category] ?? 0) + 1 })
+  const c: Record<string, number> = { 全部: sourceEntries.value.length }
+  sourceEntries.value.forEach((e) => {
+    c[e.category] = (c[e.category] ?? 0) + 1
+  })
   return c
 })
 
 const showAddForm = ref(false)
+const urlCopied = ref(false)
+
+const shareData = computed<ShareData>(() => ({
+  tab: 'ranking',
+  entries: entries.value,
+  filters: filters.value,
+}))
 
 function handleAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
   add(data)
   showAddForm.value = false
 }
 
+async function copyUrl() {
+  const { copy } = useShare()
+  await copy(shareData.value)
+  urlCopied.value = true
+  setTimeout(() => {
+    urlCopied.value = false
+  }, 2000)
+}
+
 function move(entry: Entry, dir: number) {
-  const i = entries.value.findIndex(e => e.id === entry.id)
+  const i = entries.value.findIndex((e) => e.id === entry.id)
   const j = i + dir
   if (j < 0 || j >= entries.value.length) return
   const next = entries.value.slice()
@@ -67,7 +87,7 @@ function move(entry: Entry, dir: number) {
 }
 
 function trueRank(entry: Entry) {
-  return sourceEntries.value.findIndex(e => e.id === entry.id) + 1
+  return sourceEntries.value.findIndex((e) => e.id === entry.id) + 1
 }
 </script>
 
@@ -76,9 +96,13 @@ function trueRank(entry: Entry) {
   <div
     v-if="isReadonly"
     class="mb-4 rounded-md px-4 py-2 text-center text-sm"
-    style="background:rgba(176,71,60,.08);color:var(--accent);border:1px solid rgba(176,71,60,.2)"
+    style="
+      background: rgba(176, 71, 60, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(176, 71, 60, 0.2);
+    "
   >
-    <Icon icon="mdi:eye-outline" class="inline h-4 w-4 mr-1" />
+    <Icon icon="mdi:eye-outline" class="mr-1 inline h-4 w-4" />
     這是分享的唯讀排行
   </div>
 
@@ -90,6 +114,31 @@ function trueRank(entry: Entry) {
   >
     <p class="pg-sub">拖曳或用箭頭調整名次，前三名授予獎牌</p>
   </AppPageHeader>
+
+  <!-- Add + Share toolbar -->
+  <div v-if="!isReadonly" class="mb-3 mt-4 flex items-center justify-between gap-3">
+    <button
+      class="add-btn"
+      style="width: auto; padding: 10px 20px; flex: none"
+      type="button"
+      @click="showAddForm = true"
+    >
+      <Icon icon="mdi:plus" class="h-4 w-4" />
+      新增 / 加入排行
+    </button>
+    <button
+      class="chip"
+      style="font-size: 12px; padding-bottom: 4px"
+      type="button"
+      @click="copyUrl"
+    >
+      <Icon
+        :icon="urlCopied ? 'mdi:check' : 'mdi:share-variant-outline'"
+        class="mr-0.5 h-3.5 w-3.5"
+      />
+      {{ urlCopied ? '已複製' : '分享連結' }}
+    </button>
+  </div>
 
   <!-- Category filter chips -->
   <div class="mt-1">
@@ -104,7 +153,10 @@ function trueRank(entry: Entry) {
   </div>
 
   <!-- Filtered hint -->
-  <p v-if="isFiltered && !isReadonly" class="text-[10px] text-ink-faint font-sans tracking-[.12em] mt-2">
+  <p
+    v-if="isFiltered && !isReadonly"
+    class="text-ink-faint mt-2 font-sans text-[10px] tracking-[.12em]"
+  >
     篩選中，拖曳排序已暫停
   </p>
 
@@ -152,19 +204,16 @@ function trueRank(entry: Entry) {
     />
   </div>
 
-  <!-- Add button -->
-  <div v-if="!isReadonly" class="mt-4">
-    <button class="add-btn" type="button" @click="showAddForm = true">
-      <Icon icon="mdi:plus" class="h-4 w-4" />
-      新增 / 加入排行
-    </button>
-  </div>
-
   <!-- Share panel (text-based) -->
   <SharePanel v-if="sourceEntries.length > 0" :entries="sourceEntries" />
 
   <!-- Add form sheet -->
   <Teleport to="body">
-    <AddEntryForm v-if="showAddForm && !isReadonly" default-status="看完" @add="handleAdd" @cancel="showAddForm = false" />
+    <AddEntryForm
+      v-if="showAddForm && !isReadonly"
+      default-status="看完"
+      @add="handleAdd"
+      @cancel="showAddForm = false"
+    />
   </Teleport>
 </template>

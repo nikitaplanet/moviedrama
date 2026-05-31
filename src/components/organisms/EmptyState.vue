@@ -4,7 +4,6 @@ defineProps<{ message: string; hint?: string }>()
 
 <template>
   <div class="empty">
-    <div class="empty-ic">◦</div>
     <p>{{ message }}</p>
     <small v-if="hint">{{ hint }}</small>
   </div>

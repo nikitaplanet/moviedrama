@@ -161,7 +161,7 @@
   font: 400 12px/1 "Noto Sans TC", "Lato", sans-serif;
 }
 .ticket .note {
-  @apply m-0 pt-[11px] border-t border-[var(--line)] text-[var(--ink-soft)];
+  @apply m-0 pt-[11px] border-t border-[var(--line)] text-[var(--ink-soft)] whitespace-pre-wrap;
   font: 400 13px/1.65 "Noto Sans TC", "Lato", sans-serif;
 }
 
