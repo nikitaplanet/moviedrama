@@ -106,8 +106,8 @@ const flag = (c: string) => getFlag(c)
         <StarRating v-model="form.rating" :size="16" class="mt-1" />
       </label>
     </div>
-    <label class="mb-4">備注
-      <textarea v-model="form.note" placeholder="新增備注…" rows="2" />
+    <label class="mb-4">備註
+      <textarea v-model="form.note" placeholder="新增備註…" rows="2" />
     </label>
 
     <div class="flex justify-end gap-2 mt-2">

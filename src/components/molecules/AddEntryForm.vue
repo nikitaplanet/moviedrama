@@ -98,8 +98,8 @@ function submit() {
               <StarRating v-model="form.rating" :size="16" class="mt-1.5" />
             </label>
           </div>
-          <label>備注
-            <textarea v-model="form.note" placeholder="新增備注…" rows="2" />
+          <label>備註
+            <textarea v-model="form.note" placeholder="新增備註…" rows="2" />
           </label>
 
           <button class="big-btn" :disabled="!form.title.trim()" type="button" @click="submit">

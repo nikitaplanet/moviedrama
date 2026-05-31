@@ -9,9 +9,10 @@ const shareText = computed(() => {
   const lines = props.entries.map((f, i) => {
     const n    = String(i + 1).padStart(2, '0')
     const star = f.rating > 0 ? '  ' + '★'.repeat(Math.round(f.rating)) : ''
-    return `${n}  ${f.title}（${f.country || '—'}）${star}`
+    const meta = `［${f.category}］${f.country ? `（${f.country}）` : ''}`
+    return `${n}  ${f.title}${meta}${star}`
   })
-  return `私人片單 — TOP ${props.entries.length}\n────────────\n${lines.join('\n')}\n────────────\nThe Reel List`
+  return `推薦片單 — TOP ${props.entries.length}\n────────────\n${lines.join('\n')}\n────────────\nThe Reel List`
 })
 
 const copied = ref(false)

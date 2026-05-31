@@ -17,8 +17,8 @@ export default {
         'accent-2':  'var(--accent-2)',
       },
       fontFamily: {
-        sans:  ['"Zen Kaku Gothic New"', '"Noto Sans JP"', 'ui-sans-serif', 'sans-serif'],
-        serif: ['"Noto Serif TC"', 'ui-serif', 'serif'],
+        sans:  ['"Lato"', '"Noto Sans TC"', 'ui-sans-serif', 'sans-serif'],
+        serif: ['"Noto Sans TC"', '"Lato"', 'ui-sans-serif', 'sans-serif'],
       },
     },
   },

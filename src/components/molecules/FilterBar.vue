@@ -39,7 +39,7 @@ function setSort(e: Event) {
     <Icon icon="mdi:magnify" :size="17" />
     <input
       :value="search"
-      placeholder="搜尋片名、國家、備注…"
+      placeholder="搜尋片名、國家、備註…"
       @input="emit('update:search', ($event.target as HTMLInputElement).value)"
     />
     <button
