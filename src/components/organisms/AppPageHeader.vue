@@ -9,6 +9,11 @@ defineProps<{
 
 const route = useRoute()
 const router = useRouter()
+
+function go(path: string) {
+  const uid = route.query.uid as string | undefined
+  router.push({ path, query: uid ? { uid } : undefined })
+}
 </script>
 
 <template>
@@ -23,7 +28,7 @@ const router = useRouter()
       <button
         :class="route.path === '/watchlist' ? 'on' : ''"
         type="button"
-        @click="router.push('/watchlist')"
+        @click="go('/watchlist')"
       >
         <span class="tn">片單</span>
         <span class="te">The List</span>
@@ -31,7 +36,7 @@ const router = useRouter()
       <button
         :class="route.path === '/ranking' ? 'on' : ''"
         type="button"
-        @click="router.push('/ranking')"
+        @click="go('/ranking')"
       >
         <span class="tn">排行</span>
         <span class="te">Ranking</span>

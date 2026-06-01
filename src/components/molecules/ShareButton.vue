@@ -4,12 +4,12 @@ import { Icon } from '@iconify/vue'
 import { useShare } from '../../composables/useShare'
 import AppButton from '../atoms/AppButton.vue'
 
-const props = defineProps<{ tab: 'watchlist' | 'ranking'; userId: string }>()
+const props = defineProps<{ userId: string }>()
 const { copy } = useShare()
 const copied = ref(false)
 
 async function handle() {
-  const ok = await copy(props.tab, props.userId)
+  const ok = await copy(props.userId)
   if (ok) {
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)

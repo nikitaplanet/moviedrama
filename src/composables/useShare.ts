@@ -1,11 +1,11 @@
 export function useShare() {
-  function buildUrl(tab: 'watchlist' | 'ranking', userId: string): string {
-    return new URL(`/${tab}?uid=${userId}`, window.location.origin).toString()
+  function buildUrl(userId: string): string {
+    return new URL(`/watchlist?uid=${userId}`, window.location.origin).toString()
   }
 
-  async function copy(tab: 'watchlist' | 'ranking', userId: string): Promise<boolean> {
+  async function copy(userId: string): Promise<boolean> {
     try {
-      await navigator.clipboard.writeText(buildUrl(tab, userId))
+      await navigator.clipboard.writeText(buildUrl(userId))
       return true
     } catch {
       return false

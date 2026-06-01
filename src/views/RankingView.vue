@@ -65,7 +65,7 @@ function handleAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
 async function copyUrl() {
   if (!user.value) return
   const { copy } = useShare()
-  await copy('ranking', user.value.id)
+  await copy(user.value.id)
   urlCopied.value = true
   setTimeout(() => { urlCopied.value = false }, 2000)
 }
