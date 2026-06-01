@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import WatchlistView from '../views/WatchlistView.vue'
 import RankingView from '../views/RankingView.vue'
 import LoginView from '../views/LoginView.vue'
+import ShareView from '../views/ShareView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -11,6 +12,7 @@ const router = createRouter({
     { path: '/watchlist', name: 'watchlist', component: WatchlistView, meta: { requiresAuth: true } },
     { path: '/ranking',   name: 'ranking',   component: RankingView,   meta: { requiresAuth: true } },
     { path: '/login',     name: 'login',     component: LoginView },
+    { path: '/share/:token', name: 'share',  component: ShareView },
     { path: '/:pathMatch(.*)*', redirect: '/watchlist' },
   ],
 })

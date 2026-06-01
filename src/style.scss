@@ -404,7 +404,7 @@
     sans-serif;
 }
 .add-btn:hover {
-  @apply border-[var(--ink-soft)] text-[var(--ink)];
+  @apply border-[var(--ink-soft)] text-white opacity-70;
 }
 
 .big-btn {

@@ -8,16 +8,18 @@ const publicEntries = ref<Entry[]>([])
 
 function toEntry(row: Record<string, unknown>): Entry {
   return {
-    id:       row.id        as string,
-    title:    row.title     as string,
-    titleEn:  row.title_en  as string | undefined,
-    category: row.category  as Entry['category'],
-    country:  row.country   as string,
-    status:   row.status    as Entry['status'],
-    rating:   row.rating    as number,
-    note:     row.note      as string,
-    year:     row.year      as number | undefined,
-    addedAt:  row.added_at  as string,
+    id:            row.id             as string,
+    title:         row.title          as string,
+    titleEn:       row.title_en       as string | undefined,
+    category:      row.category       as Entry['category'],
+    country:       row.country        as string,
+    status:        row.status         as Entry['status'],
+    rating:        row.rating         as number,
+    note:          row.note           as string,
+    year:          row.year           as number | undefined,
+    addedAt:       row.added_at       as string,
+    recommendedBy:   row.recommended_by   as string | undefined,
+    recommendedNote: row.recommended_note as string | undefined,
   }
 }
 
@@ -53,15 +55,17 @@ export function useWatchlist() {
       const { data: row, error } = await supabase
         .from('watchlist_entries')
         .insert({
-          user_id:  user.id,
-          title:    data.title,
-          title_en: data.titleEn ?? null,
-          category: data.category,
-          country:  data.country,
-          status:   data.status,
-          rating:   data.rating,
-          note:     data.note,
-          year:     data.year ?? null,
+          user_id:        user.id,
+          title:          data.title,
+          title_en:       data.titleEn ?? null,
+          category:       data.category,
+          country:        data.country,
+          status:         data.status,
+          rating:         data.rating,
+          note:           data.note,
+          year:           data.year ?? null,
+          recommended_by:   data.recommendedBy   ?? null,
+          recommended_note: data.recommendedNote ?? null,
         })
         .select()
         .single()

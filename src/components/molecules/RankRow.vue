@@ -7,6 +7,7 @@ import StarRating from '../atoms/StarRating.vue'
 import RankBadge from '../atoms/RankBadge.vue'
 import AddEntryForm from './AddEntryForm.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
+import ShareEntryDialog from './ShareEntryDialog.vue'
 
 const props = defineProps<{
   entry: Entry
@@ -25,6 +26,7 @@ const emit = defineEmits<{
 
 const showEditSheet = ref(false)
 const showConfirm = ref(false)
+const showShare = ref(false)
 
 function handleUpdate(data: Omit<Entry, 'id' | 'addedAt'>) {
   emit('update', data)
@@ -77,6 +79,9 @@ function handleConfirmDelete() {
           {{ entry.status }}
         </span>
         <span v-if="!readonly" class="ml-auto flex gap-1">
+          <button type="button" class="rk-arrow" title="分享給朋友" @click="showShare = true">
+            <Icon icon="mdi:share-variant-outline" class="h-3.5 w-3.5" />
+          </button>
           <button type="button" class="rk-arrow" title="編輯" @click="showEditSheet = true">
             <Icon icon="mdi:pencil-outline" class="h-3.5 w-3.5" />
           </button>
@@ -107,6 +112,14 @@ function handleConfirmDelete() {
         :message="`確定要從排行移除《${entry.title}》嗎？`"
         @confirm="handleConfirmDelete"
         @cancel="showConfirm = false"
+      />
+    </Transition>
+    <Transition name="sheet">
+      <ShareEntryDialog
+        v-if="showShare"
+        :entry="props.entry"
+        source="ranking"
+        @cancel="showShare = false"
       />
     </Transition>
   </Teleport>

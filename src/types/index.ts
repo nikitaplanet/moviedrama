@@ -36,6 +36,8 @@ export interface Entry {
   note: string
   year?: number
   addedAt: string
+  recommendedBy?: string
+  recommendedNote?: string
 }
 
 export interface FilterState {

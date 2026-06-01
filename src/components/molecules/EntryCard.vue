@@ -6,6 +6,7 @@ import { STATUS_META, CATEGORY_EN, getFlag } from '../../types'
 import StarRating from '../atoms/StarRating.vue'
 import AddEntryForm from './AddEntryForm.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
+import ShareEntryDialog from './ShareEntryDialog.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -23,6 +24,7 @@ const emit = defineEmits<{
 
 const showEditSheet = ref(false)
 const showConfirm = ref(false)
+const showShare = ref(false)
 
 function handleUpdate(data: Omit<Entry, 'id' | 'addedAt'>) {
   emit('update', props.entry.id, data)
@@ -71,20 +73,13 @@ const flag = (c: string) => getFlag(c)
         </span>
 
         <span v-if="!readonly" class="ml-auto flex gap-1">
-          <button
-            type="button"
-            class="rk-arrow"
-            title="編輯"
-            @click="showEditSheet = true"
-          >
+          <button type="button" class="rk-arrow" title="分享給朋友" @click="showShare = true">
+            <Icon icon="mdi:share-variant-outline" class="h-3.5 w-3.5" />
+          </button>
+          <button type="button" class="rk-arrow" title="編輯" @click="showEditSheet = true">
             <Icon icon="mdi:pencil-outline" class="h-3.5 w-3.5" />
           </button>
-          <button
-            type="button"
-            class="rk-del"
-            title="刪除"
-            @click="showConfirm = true"
-          >
+          <button type="button" class="rk-del" title="刪除" @click="showConfirm = true">
             <Icon icon="mdi:delete-outline" class="h-3.5 w-3.5" />
           </button>
         </span>
@@ -92,6 +87,15 @@ const flag = (c: string) => getFlag(c)
 
       <!-- Note -->
       <p v-if="entry.note" class="note">{{ entry.note }}</p>
+
+      <!-- Recommended by -->
+      <div v-if="entry.recommendedBy" class="note mt-1" style="color: var(--accent); opacity: 0.85">
+        <p class="flex items-center gap-1">
+          <Icon icon="mdi:account-heart-outline" class="inline h-3 w-3 flex-none" />
+          {{ entry.recommendedBy }} 推薦
+        </p>
+        <p v-if="entry.recommendedNote" class="mt-0.5 pl-4 italic">"{{ entry.recommendedNote }}"</p>
+      </div>
     </div>
   </article>
 
@@ -111,6 +115,14 @@ const flag = (c: string) => getFlag(c)
         :message="`確定要刪除《${entry.title}》嗎？此操作無法復原。`"
         @confirm="handleConfirmDelete"
         @cancel="showConfirm = false"
+      />
+    </Transition>
+    <Transition name="sheet">
+      <ShareEntryDialog
+        v-if="showShare"
+        :entry="entry"
+        source="watchlist"
+        @cancel="showShare = false"
       />
     </Transition>
   </Teleport>

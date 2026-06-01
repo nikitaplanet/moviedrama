@@ -24,6 +24,7 @@ watch(user, async (u) => {
 }, { immediate: true })
 
 const isReadonly = () => !!(route.query.uid)
+const isSharePage = () => route.name === 'share'
 const showDropdown = ref(false)
 const showEditUsername = ref(false)
 
@@ -49,6 +50,9 @@ async function handleSignOut() {
   <div v-if="authLoading" class="flex min-h-dvh items-center justify-center" style="background: var(--paper)">
     <Icon icon="mdi:loading" class="h-8 w-8 animate-spin" style="color: var(--accent)" />
   </div>
+
+  <!-- Share page: render without chrome -->
+  <RouterView v-else-if="isSharePage()" />
 
   <div v-else class="min-h-dvh flex flex-col font-sans" style="background: var(--paper)">
     <!-- User menu (top-right) -->
