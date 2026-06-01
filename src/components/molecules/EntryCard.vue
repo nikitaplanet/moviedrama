@@ -5,10 +5,16 @@ import type { Entry } from '../../types'
 import { STATUS_META, CATEGORY_EN, getFlag } from '../../types'
 import StarRating from '../atoms/StarRating.vue'
 import AddEntryForm from './AddEntryForm.vue'
+import ConfirmDialog from './ConfirmDialog.vue'
 
 const props = withDefaults(
-  defineProps<{ entry: Entry; rank?: number; readonly?: boolean; dragging?: boolean }>(),
-  { readonly: false, dragging: false },
+  defineProps<{
+    entry: Entry
+    rank?: number
+    readonly?: boolean
+    dragging?: boolean
+  }>(),
+  { readonly: false, dragging: false }
 )
 const emit = defineEmits<{
   remove: [id: string]
@@ -16,10 +22,16 @@ const emit = defineEmits<{
 }>()
 
 const showEditSheet = ref(false)
+const showConfirm = ref(false)
 
 function handleUpdate(data: Omit<Entry, 'id' | 'addedAt'>) {
   emit('update', props.entry.id, data)
   showEditSheet.value = false
+}
+
+function handleConfirmDelete() {
+  showConfirm.value = false
+  emit('remove', props.entry.id)
 }
 
 const flag = (c: string) => getFlag(c)
@@ -27,11 +39,15 @@ const flag = (c: string) => getFlag(c)
 
 <template>
   <article :class="['ticket', dragging && 'ticket-lift']">
-    <div class="body">
+    <span v-if="!readonly" class="drag-handle ticket-drag" title="拖曳排序">
+      <Icon icon="nimbus:drag-dots" class="h-4 w-4" />
+    </span>
+    <div class="body" :style="readonly ? 'padding-left: 18px' : ''">
       <!-- Top row: category · country -->
       <div class="toprow">
         <span class="catpill">
-          {{ entry.category }}<span class="ce">{{ CATEGORY_EN[entry.category] }}</span>
+          {{ entry.category
+          }}<span class="ce">{{ CATEGORY_EN[entry.category] }}</span>
         </span>
         <span class="ctry">
           <span class="fl">{{ flag(entry.country) }}</span>
@@ -55,15 +71,22 @@ const flag = (c: string) => getFlag(c)
         </span>
 
         <span v-if="!readonly" class="ml-auto flex gap-1">
-          <button type="button" class="rk-arrow" title="編輯" @click="showEditSheet = true">
+          <button
+            type="button"
+            class="rk-arrow"
+            title="編輯"
+            @click="showEditSheet = true"
+          >
             <Icon icon="mdi:pencil-outline" class="h-3.5 w-3.5" />
           </button>
-          <button type="button" class="rk-del" title="刪除" @click="emit('remove', entry.id)">
+          <button
+            type="button"
+            class="rk-del"
+            title="刪除"
+            @click="showConfirm = true"
+          >
             <Icon icon="mdi:delete-outline" class="h-3.5 w-3.5" />
           </button>
-          <span class="drag-handle rk-handle" style="grid-column:auto;width:26px;height:24px;" title="拖曳排序">
-            <Icon icon="mdi:drag-vertical" class="h-4 w-4" />
-          </span>
         </span>
       </div>
 
@@ -73,11 +96,22 @@ const flag = (c: string) => getFlag(c)
   </article>
 
   <Teleport to="body">
-    <AddEntryForm
-      v-if="showEditSheet"
-      :entry="entry"
-      @update="handleUpdate"
-      @cancel="showEditSheet = false"
-    />
+    <Transition name="sheet">
+      <AddEntryForm
+        v-if="showEditSheet"
+        :entry="entry"
+        @update="handleUpdate"
+        @cancel="showEditSheet = false"
+      />
+    </Transition>
+    <Transition name="sheet">
+      <ConfirmDialog
+        v-if="showConfirm"
+        title="確認刪除"
+        :message="`確定要刪除《${entry.title}》嗎？此操作無法復原。`"
+        @confirm="handleConfirmDelete"
+        @cancel="showConfirm = false"
+      />
+    </Transition>
   </Teleport>
 </template>

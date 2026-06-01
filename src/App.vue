@@ -5,6 +5,7 @@ import { Icon } from '@iconify/vue'
 import { useAuth } from './composables/useAuth'
 import { useWatchlist } from './composables/useWatchlist'
 import { useRanking } from './composables/useRanking'
+import { isLoading } from './lib/loading'
 import AppNav from './components/organisms/AppNav.vue'
 
 const router = useRouter()
@@ -55,5 +56,16 @@ async function handleSignOut() {
     </main>
 
     <AppNav v-if="user" />
+
+    <!-- Global API loading overlay -->
+    <Transition name="fade">
+      <div
+        v-if="isLoading"
+        class="fixed inset-0 z-50 flex items-center justify-center"
+        style="background: rgba(249,246,241,0.72); backdrop-filter: blur(2px)"
+      >
+        <Icon icon="mdi:loading" class="h-8 w-8 animate-spin" style="color: var(--accent)" />
+      </div>
+    </Transition>
   </div>
 </template>

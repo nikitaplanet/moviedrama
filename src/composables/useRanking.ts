@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import { withLoading } from '../lib/loading'
 import type { Entry } from '../types'
 
 const entries = ref<Entry[]>([])
 const publicEntries = ref<Entry[]>([])
-const loading = ref(false)
 
 function toEntry(row: Record<string, unknown>): Entry {
   return {
@@ -23,57 +23,63 @@ function toEntry(row: Record<string, unknown>): Entry {
 
 export function useRanking() {
   async function load() {
-    loading.value = true
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { loading.value = false; return }
-    const { data } = await supabase
-      .from('ranking_entries')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('rank_order', { ascending: true })
-    entries.value = (data ?? []).map(toEntry)
-    loading.value = false
+    await withLoading(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('ranking_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('rank_order', { ascending: true })
+      entries.value = (data ?? []).map(toEntry)
+    })
   }
 
   async function loadPublic(uid: string) {
-    const { data } = await supabase
-      .from('ranking_entries')
-      .select('*')
-      .eq('user_id', uid)
-      .order('rank_order', { ascending: true })
-    publicEntries.value = (data ?? []).map(toEntry)
+    await withLoading(async () => {
+      const { data } = await supabase
+        .from('ranking_entries')
+        .select('*')
+        .eq('user_id', uid)
+        .order('rank_order', { ascending: true })
+      publicEntries.value = (data ?? []).map(toEntry)
+    })
   }
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const nextOrder = entries.value.length
-    const { data: row, error } = await supabase
-      .from('ranking_entries')
-      .insert({
-        user_id:    user.id,
-        title:      data.title,
-        title_en:   data.titleEn ?? null,
-        category:   data.category,
-        country:    data.country,
-        status:     data.status,
-        rating:     data.rating,
-        note:       data.note,
-        year:       data.year ?? null,
-        rank_order: nextOrder,
-      })
-      .select()
-      .single()
-    if (!error && row) entries.value.push(toEntry(row))
+    await withLoading(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const nextOrder = entries.value.length
+      const { data: row, error } = await supabase
+        .from('ranking_entries')
+        .insert({
+          user_id:    user.id,
+          title:      data.title,
+          title_en:   data.titleEn ?? null,
+          category:   data.category,
+          country:    data.country,
+          status:     data.status,
+          rating:     data.rating,
+          note:       data.note,
+          year:       data.year ?? null,
+          rank_order: nextOrder,
+        })
+        .select()
+        .single()
+      if (!error && row) entries.value.push(toEntry(row))
+    })
   }
 
   async function remove(id: string) {
-    await supabase.from('ranking_entries').delete().eq('id', id)
     entries.value = entries.value.filter(e => e.id !== id)
+    await withLoading(async () => { await supabase.from('ranking_entries').delete().eq('id', id) })
     await syncOrder()
   }
 
   async function update(id: string, patch: Partial<Omit<Entry, 'id' | 'addedAt'>>) {
+    const i = entries.value.findIndex(e => e.id === id)
+    if (i !== -1) entries.value[i] = { ...entries.value[i], ...patch }
     const payload: Record<string, unknown> = {}
     if (patch.title    !== undefined) payload.title    = patch.title
     if (patch.titleEn  !== undefined) payload.title_en = patch.titleEn ?? null
@@ -83,18 +89,18 @@ export function useRanking() {
     if (patch.rating   !== undefined) payload.rating   = patch.rating
     if (patch.note     !== undefined) payload.note     = patch.note
     if (patch.year     !== undefined) payload.year     = patch.year ?? null
-
-    await supabase.from('ranking_entries').update(payload).eq('id', id)
-    const i = entries.value.findIndex(e => e.id === id)
-    if (i !== -1) entries.value[i] = { ...entries.value[i], ...patch }
+    await withLoading(async () => { await supabase.from('ranking_entries').update(payload).eq('id', id) })
   }
 
   async function syncOrder() {
-    const updates = entries.value.map((e, i) =>
-      supabase.from('ranking_entries').update({ rank_order: i }).eq('id', e.id)
+    await withLoading(() =>
+      Promise.all(
+        entries.value.map((e, i) =>
+          supabase.from('ranking_entries').update({ rank_order: i }).eq('id', e.id)
+        )
+      )
     )
-    await Promise.all(updates)
   }
 
-  return { entries, publicEntries, loading, load, loadPublic, add, remove, update, syncOrder }
+  return { entries, publicEntries, load, loadPublic, add, remove, update, syncOrder }
 }

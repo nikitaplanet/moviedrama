@@ -266,11 +266,13 @@ async function copyUrl() {
 
   <!-- Add form sheet -->
   <Teleport to="body">
-    <AddEntryForm
-      v-if="showAddForm && !isReadonly"
-      @add="handleAdd"
-      @cancel="showAddForm = false"
-      default-status="待看"
-    />
+    <Transition name="sheet">
+      <AddEntryForm
+        v-if="showAddForm && !isReadonly"
+        @add="handleAdd"
+        @cancel="showAddForm = false"
+        default-status="待看"
+      />
+    </Transition>
   </Teleport>
 </template>

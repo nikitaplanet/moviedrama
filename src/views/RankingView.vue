@@ -208,11 +208,13 @@ function trueRank(entry: Entry) {
 
   <!-- Add form sheet -->
   <Teleport to="body">
-    <AddEntryForm
-      v-if="showAddForm && !isReadonly"
-      default-status="看完"
-      @add="handleAdd"
-      @cancel="showAddForm = false"
-    />
+    <Transition name="sheet">
+      <AddEntryForm
+        v-if="showAddForm && !isReadonly"
+        default-status="看完"
+        @add="handleAdd"
+        @cancel="showAddForm = false"
+      />
+    </Transition>
   </Teleport>
 </template>

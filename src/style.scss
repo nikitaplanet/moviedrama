@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 /* ============================================================
    Design tokens  (日系簡約 · The Reel List)
    ============================================================ */
@@ -142,11 +151,17 @@
    Film card — ticket style
    ============================================================ */
 .ticket {
-  @apply relative mb-3 rounded-[var(--radius)] border border-[var(--line)] bg-[var(--card)];
-  padding: 17px 18px 15px;
+  @apply relative mb-3 flex items-stretch rounded-[var(--radius)] border border-[var(--line)] bg-[var(--card)];
+}
+.ticket-drag {
+  @apply flex flex-shrink-0 items-center justify-center;
+  width: 40px;
+  color: var(--ink-faint);
+  cursor: grab;
 }
 .ticket .body {
-  @apply relative;
+  @apply relative flex-1;
+  padding: 17px 18px 15px 0;
 }
 .ticket .toprow {
   @apply mb-[9px] flex items-baseline justify-between gap-[10px];
@@ -513,12 +528,6 @@
 .sheet-wrap {
   @apply fixed inset-0 z-[60] flex items-end;
   background: rgba(38, 35, 30, 0.32);
-  animation: sheet-fade 0.2s;
-}
-@keyframes sheet-fade {
-  from {
-    opacity: 0;
-  }
 }
 
 .sheet {
@@ -526,19 +535,7 @@
   border-radius: 18px 18px 0 0;
   padding: 25px 22px 40px 22px;
   max-height: 82vh;
-  animation: sheet-rise 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-shadow: 0 -8px 36px rgba(38, 35, 30, 0.22);
-}
-@keyframes sheet-rise {
-  from {
-    transform: translateY(100%);
-  }
-}
-@keyframes modal-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
 }
 
 @media (min-width: 768px) {
@@ -549,10 +546,36 @@
     @apply max-w-[480px] rounded-[20px] shadow-[0_20px_60px_rgba(38,35,30,.28)];
     max-height: 88vh;
     padding-bottom: 28px;
-    animation: modal-scale 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .sheet-grab {
     @apply hidden;
+  }
+}
+
+/* Vue Transition: sheet / modal */
+.sheet-enter-active {
+  transition: opacity 0.22s ease;
+  .sheet {
+    transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+.sheet-leave-active {
+  transition: opacity 0.18s ease;
+  .sheet {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+.sheet-enter-from,
+.sheet-leave-to {
+  opacity: 0;
+  .sheet {
+    transform: translateY(48px);
+  }
+}
+@media (min-width: 768px) {
+  .sheet-enter-from .sheet,
+  .sheet-leave-to .sheet {
+    transform: scale(0.95) translateY(0);
   }
 }
 
