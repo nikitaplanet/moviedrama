@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
-import {useRouter} from 'vue-router';
-import {useAuth} from '../composables/useAuth';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuth } from '../composables/useAuth';
 
 const router = useRouter();
-const {signIn, signUp} = useAuth();
+const { signIn, signUp } = useAuth();
 
 const mode = ref<'login' | 'signup'>('login');
 const email = ref('');
 const password = ref('');
+const username = ref('');
 const error = ref('');
 const busy = ref(false);
 
@@ -20,7 +21,7 @@ async function submit() {
 			const success = await signIn(email.value, password.value);
 			if (success) router.push('/');
 		} else {
-			await signUp(email.value, password.value);
+			await signUp(email.value, password.value, username.value.trim());
 			error.value = '已寄出驗證信，請確認信箱後再登入';
 			mode.value = 'login';
 		}
@@ -29,6 +30,11 @@ async function submit() {
 	} finally {
 		busy.value = false;
 	}
+}
+
+function switchMode(m: 'login' | 'signup') {
+	mode.value = m;
+	error.value = '';
 }
 </script>
 
@@ -41,6 +47,18 @@ async function submit() {
 			</div>
 
 			<form class="card flex flex-col gap-4 p-6" @submit.prevent="submit">
+				<div v-if="mode === 'signup'" class="flex flex-col gap-1">
+					<label class="field-label">用戶名稱</label>
+					<input
+						v-model="username"
+						class="field-input login-input"
+						autocomplete="username"
+						placeholder="你的名字或暱稱"
+						required
+						maxlength="32"
+						type="text" />
+				</div>
+
 				<div class="flex flex-col gap-1">
 					<label class="field-label">Email</label>
 					<input v-model="email" class="field-input login-input" autocomplete="email" placeholder="you@example.com" required type="email" />
@@ -51,7 +69,7 @@ async function submit() {
 					<input
 						v-model="password"
 						class="field-input login-input"
-						autocomplete="current-password"
+						:autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
 						placeholder="••••••••"
 						required
 						type="password" />
@@ -72,11 +90,11 @@ async function submit() {
 			<p class="mt-4 text-center text-sm tracking-wide" style="color: var(--muted)">
 				<template v-if="mode === 'login'">
 					還沒有帳號？
-					<button class="font-semibold underline" @click="mode = 'signup'" style="color: var(--accent)">立即註冊</button>
+					<button class="font-semibold underline" @click="switchMode('signup')" style="color: var(--accent)">立即註冊</button>
 				</template>
 				<template v-else>
 					已有帳號？
-					<button class="font-semibold underline" @click="mode = 'login'" style="color: var(--accent)">返回登入</button>
+					<button class="font-semibold underline" @click="switchMode('login')" style="color: var(--accent)">返回登入</button>
 				</template>
 			</p>
 		</div>

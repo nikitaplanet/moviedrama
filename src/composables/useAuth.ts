@@ -4,30 +4,59 @@ import { supabase } from '../lib/supabase'
 
 const user = ref<User | null>(null)
 const loading = ref(true)
+const username = ref('')
+
+async function loadUsername(uid: string) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', uid)
+    .single()
+  username.value = (data?.username as string) ?? ''
+}
 
 supabase.auth.getSession().then(({ data }) => {
   user.value = data.session?.user ?? null
+  if (user.value) loadUsername(user.value.id)
   loading.value = false
 })
 
 supabase.auth.onAuthStateChange((_event, session) => {
   user.value = session?.user ?? null
+  if (user.value) loadUsername(user.value.id)
+  else username.value = ''
   loading.value = false
 })
 
 export function useAuth() {
   async function signIn(email: string, password: string): Promise<boolean> {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
     return true
   }
 
-  async function signUp(email: string, password: string) {
-    const { error } = await supabase.auth.signUp({ email, password })
+  async function signUp(email: string, password: string, name: string) {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username: name } },
+    })
     if (error) throw error
+  }
+
+  async function fetchUsername(uid: string): Promise<string> {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', uid)
+      .single()
+    return (data?.username as string) ?? ''
+  }
+
+  async function updateUsername(name: string) {
+    if (!user.value) return
+    await supabase.from('profiles').update({ username: name }).eq('id', user.value.id)
+    username.value = name
   }
 
   async function signOut() {
@@ -37,8 +66,11 @@ export function useAuth() {
   return {
     user: readonly(user),
     loading: readonly(loading),
+    username: readonly(username),
     signIn,
     signUp,
     signOut,
+    fetchUsername,
+    updateUsername,
   }
 }

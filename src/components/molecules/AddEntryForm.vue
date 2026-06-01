@@ -2,7 +2,7 @@
 import { computed, reactive } from 'vue'
 import { Icon } from '@iconify/vue'
 import type { Entry, EntryCategory, EntryStatus } from '../../types'
-import { CATEGORIES, STATUSES, PRESET_COUNTRIES } from '../../types'
+import { CATEGORIES, STATUSES, PRESET_COUNTRIES, getFlag } from '../../types'
 import StarRating from '../atoms/StarRating.vue'
 
 const props = withDefaults(
@@ -97,10 +97,12 @@ function submit() {
           </div>
           <div class="form-2">
             <label>國家
-              <input v-model="form.country" list="entry-country-dl" placeholder="預設" />
-              <datalist id="entry-country-dl">
-                <option v-for="c in PRESET_COUNTRIES" :key="c" :value="c" />
-              </datalist>
+              <select v-model="form.country">
+                <option value="">— 未指定</option>
+                <option v-for="c in PRESET_COUNTRIES" :key="c" :value="c">
+                  {{ getFlag(c) }} {{ c }}
+                </option>
+              </select>
             </label>
             <label>評分
               <StarRating v-model="form.rating" :size="16" class="mt-1.5" />

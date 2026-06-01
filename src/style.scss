@@ -99,12 +99,11 @@
   display: none;
 }
 .chip {
-  @apply inline-flex flex-none cursor-pointer items-baseline gap-[5px] whitespace-nowrap border-0 border-b-[1.5px] border-transparent bg-transparent text-[var(--ink-faint)] transition-all duration-[180ms];
+  @apply inline-flex flex-none pb-4 text-black cursor-pointer items-baseline gap-[5px] whitespace-nowrap border-0 border-b-[1.5px] border-transparent bg-transparent transition-all duration-[180ms];
   font:
     400 14px/1 'Noto Sans TC',
     'Lato',
     sans-serif;
-  padding: 4px 1px 7px;
   letter-spacing: 0.04em;
 }
 .chip:hover {
@@ -292,54 +291,11 @@
 }
 
 /* ============================================================
-   Rank row
+   Rank card — ticket-rank column + shared ticket styles
    ============================================================ */
-.rankrow {
-  @apply flex items-center gap-[14px] border-b border-[var(--line)] bg-transparent;
-  padding: 16px 2px;
-  transition:
-    background 0.15s,
-    transform 0.12s,
-    box-shadow 0.12s;
-}
-.rankrow:first-child {
-  @apply border-t border-[var(--line)];
-}
-.rankrow.lift {
-  @apply relative z-[5] rounded-[20px] border-transparent bg-[var(--card)];
-  transform: scale(1.015);
-  box-shadow: 0 14px 30px -12px rgba(38, 35, 30, 0.4);
-}
-.rk-body {
-  @apply min-w-0 flex-auto;
-}
-.rk-top {
-  @apply flex items-baseline gap-2;
-}
-.rk-top h4 {
-  @apply m-0 truncate tracking-[.01em] text-[var(--ink)];
-  font:
-    500 17px/1.2 'Noto Sans TC',
-    'Lato',
-    sans-serif;
-}
-.rk-flag {
-  @apply flex-none text-[14px];
-}
-.rk-meta {
-  @apply mt-[7px] flex flex-wrap items-center gap-[10px];
-}
-.rk-meta .catpill {
-  @apply text-[var(--ink-faint)];
-}
-.rk-en {
-  @apply font-sans text-[9px] uppercase tracking-[.18em] text-[var(--ink-faint)];
-}
-.rk-ctrl {
-  @apply grid flex-none items-center;
-  grid-template-columns: auto auto;
-  grid-auto-rows: auto;
-  gap: 3px 2px;
+.ticket-rank {
+  @apply flex flex-shrink-0 items-center justify-center;
+  width: 40px;
 }
 .rk-arrow,
 .rk-del {
@@ -348,19 +304,8 @@
 .rk-arrow:hover:not(:disabled) {
   @apply bg-[var(--paper-2)] text-[var(--ink)];
 }
-.rk-arrow:disabled {
-  @apply cursor-not-allowed opacity-[.22];
-}
 .rk-del:hover {
   @apply bg-[rgba(176,71,60,.08)] text-[var(--accent)];
-}
-.rk-handle {
-  @apply flex h-[16px] items-center justify-center text-[var(--ink-faint)] opacity-60;
-  cursor: grab;
-  touch-action: none;
-}
-.rk-handle:active {
-  @apply cursor-grabbing text-[var(--ink)] opacity-100;
 }
 
 /* ============================================================
@@ -376,7 +321,7 @@
   @apply flex items-baseline gap-3;
 }
 .pg-title {
-  @apply m-0 text-[30px] font-medium leading-none tracking-[.02em] text-[var(--ink)];
+  @apply m-0 text-[36px] font-bold leading-none tracking-[.02em] text-[var(--ink)];
   font-family: 'Noto Sans TC', 'Lato', sans-serif;
 }
 .pg-cn {
@@ -451,7 +396,7 @@
    Add button / big button
    ============================================================ */
 .add-btn {
-  @apply flex w-full cursor-pointer appearance-none items-center justify-center gap-[9px] rounded-[20px] border border-[var(--line-2)] bg-transparent tracking-[.04em] text-[var(--ink-soft)] transition-all duration-[180ms];
+  @apply flex w-full cursor-pointer appearance-none items-center justify-center gap-[9px] rounded-[20px] border border-[var(--line-2)] bg-black tracking-[.04em] text-white transition-all duration-[180ms];
   padding: 15px;
   font:
     400 14px/1 'Noto Sans TC',

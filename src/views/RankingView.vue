@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import { Icon } from '@iconify/vue'
@@ -14,18 +14,27 @@ import FilterBar from '../components/molecules/FilterBar.vue'
 import SharePanel from '../components/molecules/SharePanel.vue'
 import EmptyState from '../components/organisms/EmptyState.vue'
 import AppPageHeader from '../components/organisms/AppPageHeader.vue'
+import Pagination from '../components/atoms/Pagination.vue'
 
 const route = useRoute()
-const { user } = useAuth()
+const { user, fetchUsername } = useAuth()
 const { entries, publicEntries, add, remove, update, syncOrder, loadPublic } = useRanking()
 const { filters, isReadonly, updateFilters } = useFilters()
 
 const uid = computed(() => route.query.uid as string | undefined)
+const ownerUsername = ref('')
 
-watchEffect(async () => {
-  if (uid.value) await loadPublic(uid.value)
-  else publicEntries.value = []
-})
+watch(uid, async (newUid) => {
+  if (newUid) {
+    ;[, ownerUsername.value] = await Promise.all([
+      loadPublic(newUid),
+      fetchUsername(newUid),
+    ])
+  } else {
+    publicEntries.value = []
+    ownerUsername.value = ''
+  }
+}, { immediate: true })
 
 const activeFilters = computed<FilterState>(() => filters.value)
 
@@ -52,6 +61,27 @@ const categoryCounts = computed(() => {
     c[e.category] = (c[e.category] ?? 0) + 1
   })
   return c
+})
+
+// --- pagination ---
+const PAGE_SIZE = 20
+const currentPage = ref(1)
+const pageStart = computed(() => (currentPage.value - 1) * PAGE_SIZE)
+const totalPages = computed(() =>
+  Math.ceil((!isFiltered.value && !isReadonly.value ? entries.value.length : displayEntries.value.length) / PAGE_SIZE)
+)
+const pagedDragEntries = computed({
+  get: () => entries.value.slice(pageStart.value, pageStart.value + PAGE_SIZE),
+  set: (reordered) => {
+    const full = [...entries.value]
+    full.splice(pageStart.value, reordered.length, ...reordered)
+    entries.value = full
+  },
+})
+const pagedEntries = computed(() => displayEntries.value.slice(pageStart.value, pageStart.value + PAGE_SIZE))
+
+watch([() => activeFilters.value.category, () => activeFilters.value.country], () => {
+  currentPage.value = 1
 })
 
 const showAddForm = ref(false)
@@ -97,12 +127,12 @@ function trueRank(entry: Entry) {
     "
   >
     <Icon icon="mdi:eye-outline" class="mr-1 inline h-4 w-4" />
-    這是分享的唯讀排行
+    {{ ownerUsername ? `這是 ${ownerUsername} 的排行（唯讀）` : '這是分享的唯讀排行' }}
   </div>
 
   <!-- Page header -->
   <AppPageHeader
-    kicker="My Ranking · 我的排行"
+    :kicker="isReadonly ? (ownerUsername ? `${ownerUsername} 的排行` : '分享排行') : 'My Ranking · 我的排行'"
     title="Top Picks"
     title-cn="排行"
   >
@@ -156,6 +186,8 @@ function trueRank(entry: Entry) {
     篩選中，拖曳排序已暫停
   </p>
 
+  <Transition name="fade" mode="out-in">
+    <div :key="`${activeFilters.category}-${activeFilters.country}`">
   <!-- Empty state -->
   <EmptyState
     v-if="displayEntries.length === 0"
@@ -163,48 +195,60 @@ function trueRank(entry: Entry) {
     hint="新增影片或調整篩選"
   />
 
-  <!-- Draggable rank list -->
-  <VueDraggable
-    v-else-if="!isFiltered && !isReadonly"
-    v-model="entries"
-    :animation="200"
-    handle=".drag-handle"
-    class="rk-list mt-4"
-    @end="syncOrder"
-  >
-    <RankRow
-      v-for="(entry, idx) in entries"
-      :key="entry.id"
-      :entry="entry"
-      :rank="idx + 1"
-      :is-first="idx === 0"
-      :is-last="idx === entries.length - 1"
-      @up="move(entry, -1)"
-      @down="move(entry, 1)"
-      @remove="remove(entry.id)"
-      @update="update(entry.id, $event)"
-    />
-  </VueDraggable>
+  <template v-else>
+    <!-- Draggable rank list -->
+    <VueDraggable
+      v-if="!isFiltered && !isReadonly"
+      v-model="pagedDragEntries"
+      :animation="200"
+      handle=".drag-handle"
+      class="rk-list mt-4"
+      @end="syncOrder"
+    >
+      <RankRow
+        v-for="(entry, idx) in pagedDragEntries"
+        :key="entry.id"
+        :entry="entry"
+        :rank="pageStart + idx + 1"
+        :is-first="pageStart + idx === 0"
+        :is-last="pageStart + idx === entries.length - 1"
+        @up="move(entry, -1)"
+        @down="move(entry, 1)"
+        @remove="remove(entry.id)"
+        @update="update(entry.id, $event)"
+      />
+    </VueDraggable>
 
-  <!-- Static list (filtered / readonly) -->
-  <div v-else class="rk-list mt-4">
-    <RankRow
-      v-for="(entry, idx) in displayEntries"
-      :key="entry.id"
-      :entry="entry"
-      :rank="trueRank(entry)"
-      :is-first="idx === 0"
-      :is-last="idx === displayEntries.length - 1"
-      :readonly="isReadonly"
-      @up="move(entry, -1)"
-      @down="move(entry, 1)"
-      @remove="remove(entry.id)"
-      @update="update(entry.id, $event)"
+    <!-- Static list (filtered / readonly) -->
+    <div v-else class="rk-list mt-4">
+      <RankRow
+        v-for="(entry, idx) in pagedEntries"
+        :key="entry.id"
+        :entry="entry"
+        :rank="trueRank(entry)"
+        :is-first="idx === 0 && currentPage === 1"
+        :is-last="pageStart + idx === displayEntries.length - 1"
+        :readonly="isReadonly"
+        @up="move(entry, -1)"
+        @down="move(entry, 1)"
+        @remove="remove(entry.id)"
+        @update="update(entry.id, $event)"
+      />
+    </div>
+
+    <!-- Pagination -->
+    <Pagination
+      v-if="totalPages > 1"
+      :page="currentPage"
+      :total="totalPages"
+      @update:page="currentPage = $event"
     />
-  </div>
+  </template>
+    </div>
+  </Transition>
 
   <!-- Share panel (text-based) -->
-  <SharePanel v-if="sourceEntries.length > 0" :entries="sourceEntries" />
+  <SharePanel v-if="displayEntries.length > 0" :entries="displayEntries" />
 
   <!-- Add form sheet -->
   <Teleport to="body">
