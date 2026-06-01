@@ -24,9 +24,12 @@ function toEntry(row: Record<string, unknown>): Entry {
 export function useWatchlist() {
   async function load() {
     loading.value = true
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { loading.value = false; return }
     const { data } = await supabase
       .from('watchlist_entries')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: true })
     entries.value = (data ?? []).map(toEntry)
     loading.value = false

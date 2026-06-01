@@ -24,9 +24,12 @@ function toEntry(row: Record<string, unknown>): Entry {
 export function useRanking() {
   async function load() {
     loading.value = true
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { loading.value = false; return }
     const { data } = await supabase
       .from('ranking_entries')
       .select('*')
+      .eq('user_id', user.id)
       .order('rank_order', { ascending: true })
     entries.value = (data ?? []).map(toEntry)
     loading.value = false
