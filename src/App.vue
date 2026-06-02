@@ -15,10 +15,11 @@ const { user, loading: authLoading, username, signOut, updateUsername } = useAut
 const { load: loadWatchlist } = useWatchlist()
 const { load: loadRanking } = useRanking()
 
-watch(user, async (u) => {
-  if (u) {
+watch(user, async (newUser, oldUser) => {
+  if (newUser && !oldUser) {
+    // Only load on first sign-in or initial session restore, not on token refresh
     await Promise.all([loadWatchlist(), loadRanking()])
-  } else if (!authLoading.value && !route.query.uid) {
+  } else if (!newUser && !authLoading.value && !route.query.uid) {
     router.replace({ name: 'login' })
   }
 }, { immediate: true })

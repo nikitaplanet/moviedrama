@@ -24,7 +24,8 @@ function toEntry(row: Record<string, unknown>): Entry {
 export function useRanking() {
   async function load() {
     await withLoading(async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
       if (!user) return
       const { data } = await supabase
         .from('ranking_entries')
@@ -48,7 +49,8 @@ export function useRanking() {
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
     await withLoading(async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
       if (!user) return
       const nextOrder = entries.value.length
       const { data: row, error } = await supabase

@@ -243,12 +243,12 @@ function trueRank(entry: Entry) {
       :total="totalPages"
       @update:page="currentPage = $event"
     />
+
+    <!-- Share panel (text-based) -->
+    <SharePanel :entries="displayEntries" />
   </template>
     </div>
   </Transition>
-
-  <!-- Share panel (text-based) -->
-  <SharePanel v-if="displayEntries.length > 0" :entries="displayEntries" />
 
   <!-- Add form sheet -->
   <Teleport to="body">

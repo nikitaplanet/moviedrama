@@ -26,7 +26,8 @@ function toEntry(row: Record<string, unknown>): Entry {
 export function useWatchlist() {
   async function load() {
     await withLoading(async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
       if (!user) return
       const { data } = await supabase
         .from('watchlist_entries')
@@ -50,7 +51,8 @@ export function useWatchlist() {
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
     await withLoading(async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
       if (!user) return
       const { data: row, error } = await supabase
         .from('watchlist_entries')

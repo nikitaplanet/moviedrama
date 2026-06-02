@@ -15,13 +15,13 @@ async function loadUsername(uid: string) {
   username.value = (data?.username as string) ?? ''
 }
 
-supabase.auth.getSession().then(({ data }) => {
-  user.value = data.session?.user ?? null
-  if (user.value) loadUsername(user.value.id)
-  loading.value = false
-})
-
-supabase.auth.onAuthStateChange((_event, session) => {
+// onAuthStateChange fires INITIAL_SESSION on subscribe — no need for a separate getSession() call.
+// Ignoring TOKEN_REFRESHED avoids re-running loadUsername and triggering App.vue watch on every token refresh.
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'TOKEN_REFRESHED') {
+    user.value = session?.user ?? null
+    return
+  }
   user.value = session?.user ?? null
   if (user.value) loadUsername(user.value.id)
   else username.value = ''
