@@ -63,6 +63,7 @@ function viewRanking(friendUid: string) {
 </script>
 
 <template>
+<div>
   <AppPageHeader title="Friends" title-cn="好友" kicker="私人放映室 · 好友片單" />
 
   <!-- Toolbar -->
@@ -170,4 +171,5 @@ function viewRanking(friendUid: string) {
       </div>
     </div>
   </div>
+</div>
 </template>

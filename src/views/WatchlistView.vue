@@ -165,6 +165,7 @@ async function copyUrl() {
 </script>
 
 <template>
+<div>
 	<!-- Readonly banner -->
 	<div v-if="isReadonly" class="mb-4 flex flex-col gap-2">
 		<div
@@ -304,4 +305,5 @@ async function copyUrl() {
 			<AddEntryForm v-if="showAddForm && !isReadonly" @add="handleAdd" @cancel="showAddForm = false" default-status="待看" />
 		</Transition>
 	</Teleport>
+</div>
 </template>

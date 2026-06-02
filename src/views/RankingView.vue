@@ -116,6 +116,7 @@ function trueRank(entry: Entry) {
 </script>
 
 <template>
+<div>
 	<!-- Readonly banner -->
 	<div v-if="isReadonly" class="mb-4 flex flex-col gap-2">
 		<div
@@ -221,4 +222,5 @@ function trueRank(entry: Entry) {
 			<AddEntryForm v-if="showAddForm && !isReadonly" @add="handleAdd" @cancel="showAddForm = false" default-status="看完" />
 		</Transition>
 	</Teleport>
+</div>
 </template>

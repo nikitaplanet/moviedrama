@@ -167,7 +167,14 @@ async function handleSignOut() {
 
     <main class="flex-1 overflow-y-auto">
       <div class="mx-auto max-w-xl px-[22px] pb-24 pt-4 md:pb-10">
-        <RouterView />
+        <RouterView v-slot="{ Component }">
+          <Transition name="page-fade">
+            <component :is="Component" :key="$route.path" />
+          </Transition>
+        </RouterView>
+        <footer class="mt-12 pb-2 text-center font-sans text-[10px] tracking-[.14em]" style="color: var(--ink-faint); opacity: 0.5">
+          © {{ new Date().getFullYear() }} NikitaL · All rights reserved
+        </footer>
       </div>
     </main>
 
