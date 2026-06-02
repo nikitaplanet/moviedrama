@@ -50,3 +50,20 @@ create policy "ranking: own rows only"
   on ranking_entries for all
   using  (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Friends 好友清單
+create table if not exists friends (
+  id          uuid        primary key default gen_random_uuid(),
+  user_id     uuid        references auth.users(id) on delete cascade not null,
+  friend_uid  uuid        not null,
+  friend_name text        not null default '',
+  created_at  timestamptz not null default now(),
+  unique(user_id, friend_uid)
+);
+
+alter table friends enable row level security;
+
+create policy "friends: own rows only"
+  on friends for all
+  using  (auth.uid() = user_id)
+  with check (auth.uid() = user_id);

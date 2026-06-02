@@ -10,9 +10,9 @@ defineProps<{
 const route = useRoute();
 const router = useRouter();
 
-function go(path: string) {
+function go(path: string, keepUid = true) {
 	const uid = route.query.uid as string | undefined;
-	router.push({path, query: uid ? {uid} : undefined});
+	router.push({path, query: keepUid && uid ? {uid} : undefined});
 }
 </script>
 
@@ -34,6 +34,10 @@ function go(path: string) {
 			<button :class="route.path === '/ranking' ? 'on' : ''" @click="go('/ranking')" type="button">
 				<span class="tn">排行</span>
 				<span class="te">Ranking</span>
+			</button>
+			<button v-if="!route.query.uid" :class="route.path === '/friends' ? 'on' : ''" @click="go('/friends', false)" type="button">
+				<span class="tn">好友</span>
+				<span class="te">Friends</span>
 			</button>
 		</nav>
 	</div>

@@ -377,7 +377,7 @@
    Desktop inline nav (below page title, md+)
    ============================================================ */
 .desk-nav {
-  @apply flex gap-0 border-b border-[var(--line)];
+  @apply gap-0 border-b border-[var(--line)];
 }
 
 .desk-nav button {
@@ -406,7 +406,7 @@
    Bottom tabbar nav
    ============================================================ */
 .tabbar {
-  @apply grid grid-cols-2 border-t border-[var(--line)];
+  @apply grid grid-cols-3 border-t border-[var(--line)];
   background: rgba(242, 239, 232, 0.94);
   backdrop-filter: blur(10px);
 }

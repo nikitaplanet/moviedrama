@@ -59,6 +59,11 @@ export function useAuth() {
     username.value = name
   }
 
+  async function updatePassword(newPassword: string) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    if (error) throw error
+  }
+
   async function signOut() {
     await supabase.auth.signOut()
   }
@@ -72,5 +77,6 @@ export function useAuth() {
     signOut,
     fetchUsername,
     updateUsername,
+    updatePassword,
   }
 }

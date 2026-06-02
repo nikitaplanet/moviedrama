@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {computed, ref, watch} from 'vue';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {VueDraggable} from 'vue-draggable-plus';
 import {Icon} from '@iconify/vue';
 import type {Entry, FilterState} from '../types';
@@ -17,6 +17,7 @@ import AppPageHeader from '../components/organisms/AppPageHeader.vue';
 import Pagination from '../components/atoms/Pagination.vue';
 
 const route = useRoute();
+const router = useRouter();
 const {user, fetchUsername} = useAuth();
 const {entries, publicEntries, add, remove, update, syncOrder, loadPublic} = useRanking();
 const {filters, isReadonly, updateFilters} = useFilters();
@@ -116,12 +117,17 @@ function trueRank(entry: Entry) {
 
 <template>
 	<!-- Readonly banner -->
-	<div
-		v-if="isReadonly"
-		class="mb-4 rounded-md px-4 py-2 text-center text-sm"
-		style="background: rgba(176, 71, 60, 0.08); color: var(--accent); border: 1px solid rgba(176, 71, 60, 0.2)">
-		<Icon class="mr-1 inline h-4 w-4" icon="mdi:eye-outline" />
-		{{ ownerUsername ? `這是 ${ownerUsername} 的排行（唯讀）` : '這是分享的唯讀排行' }}
+	<div v-if="isReadonly" class="mb-4 flex flex-col gap-2">
+		<div
+			class="rounded-md px-4 py-2 text-center text-sm"
+			style="background: rgba(176, 71, 60, 0.08); color: var(--accent); border: 1px solid rgba(176, 71, 60, 0.2)">
+			<Icon class="mr-1 inline h-4 w-4" icon="mdi:eye-outline" />
+			{{ ownerUsername ? `這是 ${ownerUsername} 的排行（唯讀）` : '這是分享的唯讀排行' }}
+		</div>
+		<button v-if="user" class="chip self-start text-xs" type="button" @click="router.push('/watchlist')">
+			<Icon class="mr-1 h-3.5 w-3.5" icon="mdi:arrow-left" />
+			返回我的片單
+		</button>
 	</div>
 
 	<!-- Page header -->

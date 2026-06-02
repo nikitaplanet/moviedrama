@@ -5,20 +5,23 @@ import { Icon } from '@iconify/vue'
 import { useAuth } from './composables/useAuth'
 import { useWatchlist } from './composables/useWatchlist'
 import { useRanking } from './composables/useRanking'
+import { useFriends } from './composables/useFriends'
 import { isLoading } from './lib/loading'
 import AppNav from './components/organisms/AppNav.vue'
 import EditUsernameDialog from './components/molecules/EditUsernameDialog.vue'
+import ChangePasswordDialog from './components/molecules/ChangePasswordDialog.vue'
 
 const router = useRouter()
 const route = useRoute()
-const { user, loading: authLoading, username, signOut, updateUsername } = useAuth()
+const { user, loading: authLoading, username, signOut, updateUsername, updatePassword } = useAuth()
 const { load: loadWatchlist } = useWatchlist()
 const { load: loadRanking } = useRanking()
+const { load: loadFriends } = useFriends()
 
 watch(user, async (newUser, oldUser) => {
   if (newUser && !oldUser) {
     // Only load on first sign-in or initial session restore, not on token refresh
-    await Promise.all([loadWatchlist(), loadRanking()])
+    await Promise.all([loadWatchlist(), loadRanking(), loadFriends()])
   } else if (!newUser && !authLoading.value && !route.query.uid) {
     router.replace({ name: 'login' })
   }
@@ -28,10 +31,36 @@ const isReadonly = () => !!(route.query.uid)
 const isSharePage = () => route.name === 'share'
 const showDropdown = ref(false)
 const showEditUsername = ref(false)
+const showChangePassword = ref(false)
+const changePasswordError = ref('')
+const uidCopied = ref(false)
+
+async function copyUid() {
+  if (!user.value) return
+  await navigator.clipboard.writeText(user.value.id)
+  uidCopied.value = true
+  setTimeout(() => { uidCopied.value = false }, 2000)
+}
 
 function openEditUsername() {
   showDropdown.value = false
   showEditUsername.value = true
+}
+
+function openChangePassword() {
+  showDropdown.value = false
+  changePasswordError.value = ''
+  showChangePassword.value = true
+}
+
+async function handleChangePassword(password: string) {
+  changePasswordError.value = ''
+  try {
+    await updatePassword(password)
+    showChangePassword.value = false
+  } catch (e: unknown) {
+    changePasswordError.value = (e as Error)?.message ?? '更改失敗，請稍後再試'
+  }
 }
 
 async function handleUpdateUsername(name: string) {
@@ -78,9 +107,24 @@ async function handleSignOut() {
       <Transition name="fade">
         <div
           v-if="showDropdown"
-          class="absolute right-0 top-full mt-1.5 w-36 overflow-hidden rounded-xl"
+          class="absolute right-0 top-full mt-1.5 w-56 overflow-hidden rounded-xl"
           style="background: var(--card); border: 1px solid var(--line); box-shadow: 0 4px 20px rgba(0,0,0,0.10)"
         >
+          <!-- UUID -->
+          <div class="px-4 py-2.5" style="border-bottom: 1px solid var(--line)">
+            <p class="mb-1 font-sans text-[9px] tracking-widest" style="color: var(--ink-faint)">MY UID</p>
+            <div class="flex items-center gap-1.5">
+              <span class="flex-1 truncate font-mono text-[10px]" style="color: var(--ink)">{{ user?.id }}</span>
+              <button
+                type="button"
+                class="flex-none transition-opacity hover:opacity-60"
+                style="color: var(--ink-faint)"
+                @click="copyUid"
+              >
+                <Icon :icon="uidCopied ? 'mdi:check' : 'mdi:content-copy'" class="h-3 w-3" />
+              </button>
+            </div>
+          </div>
           <button
             type="button"
             class="flex w-full items-center gap-2 px-4 py-2.5 text-xs transition-colors hover:bg-black/5"
@@ -89,6 +133,16 @@ async function handleSignOut() {
           >
             <Icon icon="mdi:pencil-outline" class="h-3.5 w-3.5" />
             編輯名稱
+          </button>
+          <div style="height: 1px; background: var(--line)" />
+          <button
+            type="button"
+            class="flex w-full items-center gap-2 px-4 py-2.5 text-xs transition-colors hover:bg-black/5"
+            style="color: var(--ink)"
+            @click="openChangePassword"
+          >
+            <Icon icon="mdi:lock-outline" class="h-3.5 w-3.5" />
+            更改密碼
           </button>
           <div style="height: 1px; background: var(--line)" />
           <button
@@ -124,6 +178,13 @@ async function handleSignOut() {
       v-model:visible="showEditUsername"
       :current="username"
       @confirm="handleUpdateUsername"
+    />
+
+    <!-- Change password dialog -->
+    <ChangePasswordDialog
+      v-model:visible="showChangePassword"
+      :api-error="changePasswordError"
+      @confirm="handleChangePassword"
     />
 
     <!-- Global API loading overlay -->
