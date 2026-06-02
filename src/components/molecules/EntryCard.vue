@@ -51,7 +51,7 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 		<div :style="(readonly || !sortable) ? 'padding-left: 20px' : ''" class="body">
 			<!-- Top row: category · country -->
 			<div class="toprow">
-				<span class="catpill">
+	<span class="catpill">
 					{{ entry.category }}<span class="ce">{{ CATEGORY_EN[entry.category] }}</span>
 				</span>
 				<span class="ctry">

@@ -99,12 +99,12 @@ export function useRanking() {
   }
 
   async function syncOrder() {
-    await withLoading(() =>
-      supabase.rpc('update_ranking_order', {
+    await withLoading(async () => {
+      await supabase.rpc('update_ranking_order', {
         ids:    entries.value.map(e => e.id),
         orders: entries.value.map((_, i) => i),
       })
-    )
+    })
   }
 
   return { entries, publicEntries, load, loadPublic, add, remove, update, syncOrder }

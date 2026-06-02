@@ -98,12 +98,12 @@ export function useWatchlist() {
   }
 
   async function syncOrder() {
-    await withLoading(() =>
-      supabase.rpc('update_watchlist_order', {
+    await withLoading(async () => {
+      await supabase.rpc('update_watchlist_order', {
         ids:    entries.value.map(e => e.id),
         orders: entries.value.map((_, i) => i),
       })
-    )
+    })
   }
 
   return { entries, publicEntries, load, loadPublic, add, remove, update, syncOrder }
