@@ -23,7 +23,8 @@
       "Bash(curl -sI https://moviedrama-mld60kkq8-nikitaplanets-projects.vercel.app)",
       "Bash(curl -sI https://moviedrama-iota.vercel.app)",
       "Bash(pnpm build *)",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(python3 *)"
     ]
   }
 }
