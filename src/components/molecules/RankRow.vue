@@ -105,22 +105,17 @@ function handleConfirmDelete() {
         @cancel="showEditSheet = false"
       />
     </Transition>
-    <Transition name="sheet">
-      <ConfirmDialog
-        v-if="showConfirm"
-        title="確認刪除"
-        :message="`確定要從排行移除《${entry.title}》嗎？`"
-        @confirm="handleConfirmDelete"
-        @cancel="showConfirm = false"
-      />
-    </Transition>
-    <Transition name="sheet">
-      <ShareEntryDialog
-        v-if="showShare"
-        :entry="props.entry"
-        source="ranking"
-        @cancel="showShare = false"
-      />
-    </Transition>
   </Teleport>
+
+  <ConfirmDialog
+    v-model:visible="showConfirm"
+    title="確認刪除"
+    :message="`確定要從排行移除《${entry.title}》嗎？`"
+    @confirm="handleConfirmDelete"
+  />
+  <ShareEntryDialog
+    v-model:visible="showShare"
+    :entry="props.entry"
+    source="ranking"
+  />
 </template>

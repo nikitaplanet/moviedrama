@@ -108,22 +108,17 @@ const flag = (c: string) => getFlag(c)
         @cancel="showEditSheet = false"
       />
     </Transition>
-    <Transition name="sheet">
-      <ConfirmDialog
-        v-if="showConfirm"
-        title="確認刪除"
-        :message="`確定要刪除《${entry.title}》嗎？此操作無法復原。`"
-        @confirm="handleConfirmDelete"
-        @cancel="showConfirm = false"
-      />
-    </Transition>
-    <Transition name="sheet">
-      <ShareEntryDialog
-        v-if="showShare"
-        :entry="entry"
-        source="watchlist"
-        @cancel="showShare = false"
-      />
-    </Transition>
   </Teleport>
+
+  <ConfirmDialog
+    v-model:visible="showConfirm"
+    title="確認刪除"
+    :message="`確定要刪除《${entry.title}》嗎？此操作無法復原。`"
+    @confirm="handleConfirmDelete"
+  />
+  <ShareEntryDialog
+    v-model:visible="showShare"
+    :entry="entry"
+    source="watchlist"
+  />
 </template>

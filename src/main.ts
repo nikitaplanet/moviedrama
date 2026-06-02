@@ -1,6 +1,10 @@
 import { createApp } from 'vue'
+import PrimeVue from 'primevue/config'
 import './style.scss'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app')
+createApp(App)
+  .use(router)
+  .use(PrimeVue, { unstyled: true })
+  .mount('#app')

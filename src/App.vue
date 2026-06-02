@@ -120,16 +120,11 @@ async function handleSignOut() {
     <AppNav v-if="user" />
 
     <!-- Edit username dialog -->
-    <Teleport to="body">
-      <Transition name="sheet">
-        <EditUsernameDialog
-          v-if="showEditUsername"
-          :current="username"
-          @confirm="handleUpdateUsername"
-          @cancel="showEditUsername = false"
-        />
-      </Transition>
-    </Teleport>
+    <EditUsernameDialog
+      v-model:visible="showEditUsername"
+      :current="username"
+      @confirm="handleUpdateUsername"
+    />
 
     <!-- Global API loading overlay -->
     <Transition name="fade">
