@@ -15,6 +15,7 @@ create table if not exists watchlist_entries (
   rating      numeric(3,1) not null default 0,
   note        text        not null default '',
   year        integer,
+  sort_order  integer     not null default 0,
   added_at    timestamptz not null default now(),
   created_at  timestamptz not null default now()
 );

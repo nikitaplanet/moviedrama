@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	'update:sort': [s: string];
 }>();
 
-const SORT_OPTIONS = ['最新', '評分', '名稱'];
+const SORT_OPTIONS = ['預設', '最新', '評分', '名稱'];
 const hasActive = computed(() => !!(props.filters.category || props.filters.country));
 
 function setCategory(c: EntryCategory | '') {

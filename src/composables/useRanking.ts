@@ -48,11 +48,11 @@ export function useRanking() {
   }
 
   async function add(data: Omit<Entry, 'id' | 'addedAt'>) {
+    let inserted = false
     await withLoading(async () => {
       const { data: { session } } = await supabase.auth.getSession()
       const user = session?.user
       if (!user) return
-      const nextOrder = entries.value.length
       const { data: row, error } = await supabase
         .from('ranking_entries')
         .insert({
@@ -65,12 +65,16 @@ export function useRanking() {
           rating:     data.rating,
           note:       data.note,
           year:       data.year ?? null,
-          rank_order: nextOrder,
+          rank_order: 0,
         })
         .select()
         .single()
-      if (!error && row) entries.value.push(toEntry(row))
+      if (!error && row) {
+        entries.value.unshift(toEntry(row))
+        inserted = true
+      }
     })
+    if (inserted) await syncOrder()
   }
 
   async function remove(id: string) {
@@ -96,11 +100,10 @@ export function useRanking() {
 
   async function syncOrder() {
     await withLoading(() =>
-      Promise.all(
-        entries.value.map((e, i) =>
-          supabase.from('ranking_entries').update({ rank_order: i }).eq('id', e.id)
-        )
-      )
+      supabase.rpc('update_ranking_order', {
+        ids:    entries.value.map(e => e.id),
+        orders: entries.value.map((_, i) => i),
+      })
     )
   }
 

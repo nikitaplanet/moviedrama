@@ -21,7 +21,7 @@ import Pagination from '../components/atoms/Pagination.vue';
 const route = useRoute();
 const router = useRouter();
 const {user, username, fetchUsername} = useAuth();
-const {entries, publicEntries, add, remove, update, loadPublic} = useWatchlist();
+const {entries, publicEntries, add, remove, update, loadPublic, syncOrder} = useWatchlist();
 const {filters, isReadonly, updateFilters} = useFilters();
 
 const uid = computed(() => route.query.uid as string | undefined);
@@ -46,7 +46,7 @@ const sourceEntries = computed<Entry[]>(() => (isReadonly.value ? publicEntries.
 
 // --- search + sort ---
 const search = ref('');
-const sort = ref('最新');
+const sort = ref('預設');
 
 // --- status segmented (synced to route.query.tab) ---
 const statusTab = computed<EntryStatus | '全部'>({
@@ -86,13 +86,14 @@ const statusCounts = computed(() => {
 
 const displayEntries = computed(() => {
 	let r = preStatusEntries.value.filter((e) => statusTab.value === '全部' || e.status === statusTab.value);
-	if (sort.value === '最新') r = [...r].sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+	if (sort.value === '最新') r = [...r].sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
 	if (sort.value === '評分') r = [...r].sort((a, b) => b.rating - a.rating || (b.year ?? 0) - (a.year ?? 0));
 	if (sort.value === '名稱') r = [...r].sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
 	return r;
 });
 
 const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country || search.value || statusTab.value !== '全部'));
+const canDrag = computed(() => !isFiltered.value && !isReadonly.value && sort.value === '預設');
 
 // Stats (whole library)
 const stats = computed(() => ({
@@ -115,7 +116,7 @@ const PAGE_SIZE = 20;
 const currentPage = ref(1);
 const pageStart = computed(() => (currentPage.value - 1) * PAGE_SIZE);
 const totalPages = computed(() =>
-	Math.ceil((!isFiltered.value && !isReadonly.value ? entries.value.length : displayEntries.value.length) / PAGE_SIZE),
+	Math.ceil((canDrag.value ? entries.value.length : displayEntries.value.length) / PAGE_SIZE),
 );
 const pagedDragEntries = computed({
 	get: () => entries.value.slice(pageStart.value, pageStart.value + PAGE_SIZE),
@@ -254,20 +255,22 @@ async function copyUrl() {
 	<!-- Results bar -->
 	<div class="resbar">─── {{ displayEntries.length }} 部結果 ───</div>
 
-	<!-- Hint when filtered -->
-	<p v-if="isFiltered && !isReadonly" class="mb-2 font-sans text-[10px] tracking-[.12em] text-ink-faint">篩選中，拖曳排序已暫停</p>
+	<!-- Hint when drag is suspended -->
+	<p v-if="!canDrag && !isReadonly" class="mb-2 font-sans text-[10px] tracking-[.12em] text-ink-faint">
+		{{ isFiltered ? '篩選中，拖曳排序已暫停' : '排序中，拖曳排序已暫停' }}
+	</p>
 
 	<Transition mode="out-in" name="fade">
-		<div :key="`${statusTab}-${activeFilters.category}-${activeFilters.country}`">
+		<div :key="`${statusTab}-${activeFilters.category}-${activeFilters.country}-${sort}`">
 			<!-- Empty state -->
 			<EmptyState v-if="displayEntries.length === 0" hint="調整篩選或清除搜尋" message="沒有符合的影片" />
 
-			<!-- Draggable list -->
-			<VueDraggable v-else-if="!isFiltered && !isReadonly" v-model="pagedDragEntries" :animation="200" class="flex flex-col" handle=".drag-handle">
+			<!-- Draggable list (only when sort=最新 and no filters) -->
+			<VueDraggable v-else-if="canDrag" v-model="pagedDragEntries" :animation="200" class="flex flex-col" handle=".drag-handle" @end="syncOrder">
 				<EntryCard v-for="(entry, idx) in pagedDragEntries" :entry="entry" :key="entry.id" :rank="pageStart + idx + 1" @remove="remove" @update="update" />
 			</VueDraggable>
 
-			<!-- Static list (filtered / readonly) -->
+			<!-- Static list (sorted / filtered / readonly) -->
 			<div v-else class="flex flex-col">
 				<EntryCard
 					v-for="(entry, idx) in pagedEntries"
@@ -275,6 +278,7 @@ async function copyUrl() {
 					:key="entry.id"
 					:rank="pageStart + idx + 1"
 					:readonly="isReadonly"
+					:sortable="false"
 					@remove="remove"
 					@update="update" />
 			</div>

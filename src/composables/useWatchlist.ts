@@ -33,6 +33,7 @@ export function useWatchlist() {
         .from('watchlist_entries')
         .select('*')
         .eq('user_id', user.id)
+        .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false })
       entries.value = (data ?? []).map(toEntry)
     })
@@ -68,6 +69,7 @@ export function useWatchlist() {
           year:           data.year ?? null,
           recommended_by:   data.recommendedBy   ?? null,
           recommended_note: data.recommendedNote ?? null,
+          sort_order:       0,
         })
         .select()
         .single()
@@ -95,5 +97,14 @@ export function useWatchlist() {
     await withLoading(async () => { await supabase.from('watchlist_entries').update(payload).eq('id', id) })
   }
 
-  return { entries, publicEntries, load, loadPublic, add, remove, update }
+  async function syncOrder() {
+    await withLoading(() =>
+      supabase.rpc('update_watchlist_order', {
+        ids:    entries.value.map(e => e.id),
+        orders: entries.value.map((_, i) => i),
+      })
+    )
+  }
+
+  return { entries, publicEntries, load, loadPublic, add, remove, update, syncOrder }
 }
