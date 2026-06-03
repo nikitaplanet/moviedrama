@@ -95,10 +95,10 @@ function handleAdd() {
 			<div class="ticket">
 				<img
 					v-if="share.entry_data.posterUrl"
-					:src="share.entry_data.posterUrl"
 					:alt="share.entry_data.title"
-					class="aspect-movieCover ml-3 w-20 flex-none self-center rounded object-cover" />
-				<div class="body" :style="share.entry_data.posterUrl ? 'padding-left:12px' : 'padding-left:18px'">
+					:src="share.entry_data.posterUrl"
+					class="ml-3 w-20 flex-none self-center rounded object-cover" />
+				<div :style="share.entry_data.posterUrl ? 'padding-left:12px' : 'padding-left:18px'" class="body">
 					<div class="toprow">
 						<span class="catpill">{{ share.entry_data.category }}</span>
 						<span class="ctry">
@@ -108,7 +108,11 @@ function handleAdd() {
 					</div>
 					<h3>{{ share.entry_data.title }}</h3>
 					<div v-if="share.entry_data.titleEn || share.entry_data.releaseDate" class="ensub">
-						{{ [share.entry_data.titleEn, share.entry_data.releaseDate ? formatDate(share.entry_data.releaseDate) : null].filter(Boolean).join(' · ') }}
+						{{
+							[share.entry_data.titleEn, share.entry_data.releaseDate ? formatDate(share.entry_data.releaseDate) : null]
+								.filter(Boolean)
+								.join(' · ')
+						}}
 					</div>
 					<div class="midrow">
 						<span class="statuschip">
@@ -120,7 +124,7 @@ function handleAdd() {
 					<div v-if="share.entry_data.status === '即將上映'" class="mt-1 flex items-center justify-end">
 						<span
 							class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-sans text-[9px] font-semibold tracking-[.12em]"
-							style="background:rgba(123,94,167,0.12); color:#7B5EA7; border:1px solid rgba(123,94,167,0.25)">
+							style="background: rgba(123, 94, 167, 0.12); color: #7b5ea7; border: 1px solid rgba(123, 94, 167, 0.25)">
 							<Icon class="h-2.5 w-2.5" icon="mdi:clock-outline" />
 							即將上映
 						</span>
@@ -135,7 +139,7 @@ function handleAdd() {
 					<span class="text-2xl">✅</span>
 					<p class="font-medium" style="color: var(--ink)">已加入你的待看清單！</p>
 					<button
-						class="font-medium mt-2 text-sm tracking-wider underline underline-offset-2"
+						class="mt-2 text-sm font-medium tracking-wider underline underline-offset-2"
 						@click="router.push('/watchlist')"
 						style="padding-bottom: 4px">
 						前往片單查看

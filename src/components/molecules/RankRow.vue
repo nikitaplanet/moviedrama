@@ -78,7 +78,7 @@ function handleConfirmDelete() {
 			v-if="entry.posterUrl"
 			:alt="entry.title"
 			:src="entry.posterUrl"
-			class="aspect-movieCover w-32 flex-none cursor-pointer self-center rounded-md object-cover"
+			class="w-32 flex-none cursor-pointer self-center rounded-md object-cover"
 			@click="showPoster = true" />
 
 		<!-- Body -->
@@ -181,7 +181,7 @@ function handleConfirmDelete() {
 						v-if="largePosterUrl ?? entry.posterUrl"
 						:alt="entry.title"
 						:src="largePosterUrl ?? entry.posterUrl"
-						class="h-52 w-full flex-none object-cover object-top sm:aspect-movieCover sm:h-full sm:w-auto" />
+						class="h-52 w-full flex-none object-cover object-top sm:h-full sm:w-auto" />
 					<!-- Info: below poster on mobile, right column on desktop -->
 					<div class="min-h-0 flex-1 overflow-y-auto p-5">
 						<h2 class="text-xl font-semibold leading-snug" style="color: var(--ink)">{{ entry.title }}</h2>

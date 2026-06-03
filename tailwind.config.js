@@ -21,8 +21,8 @@ export default {
 				serif: ['"Noto Sans TC"', '"Lato"', 'ui-sans-serif', 'sans-serif'],
 			},
 			aspectRatio: {
-				movieCover: '9/16'
-			}
+				movieCover: '1/1.5',
+			},
 		},
 	},
 	plugins: [],

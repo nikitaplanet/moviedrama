@@ -58,10 +58,6 @@ async function submitAdd() {
 	}
 }
 
-async function quickAdd(s: {id: string; username: string}) {
-	await add(s.id, s.username);
-	suggestions.value = suggestions.value.filter((u) => u.id !== s.id);
-}
 
 function viewWatchlist(friendUid: string) {
 	router.push({path: '/watchlist', query: {uid: friendUid}});

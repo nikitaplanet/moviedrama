@@ -58,7 +58,7 @@ async function copy() {
           v-if="entry.posterUrl"
           :src="entry.posterUrl"
           :alt="entry.title"
-          class="aspect-movieCover w-14 flex-none rounded object-cover" />
+          class=" w-14 flex-none rounded object-cover" />
         <div class="min-w-0 flex-1">
           <p class="flex flex-wrap items-center gap-x-1.5 text-[11px] tracking-wide" style="color: var(--ink-soft)">
             <span>{{ entry.category }}</span>

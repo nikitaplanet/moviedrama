@@ -320,7 +320,7 @@ async function copyUrl() {
 						</div>
 						<EntryCard
 							v-for="entry in group.entries"
-							:addable="isReadonly && !!user"
+							:addable="isReadonly && !!user && uid !== user?.id"
 							:entry="entry"
 							:key="entry.id"
 							:readonly="isReadonly"
@@ -335,7 +335,7 @@ async function copyUrl() {
 				<div v-else class="flex flex-col">
 					<EntryCard
 						v-for="(entry, idx) in pagedEntries"
-						:addable="isReadonly && !!user"
+						:addable="isReadonly && !!user && uid !== user?.id"
 						:entry="entry"
 						:key="entry.id"
 						:rank="pageStart + idx + 1"
