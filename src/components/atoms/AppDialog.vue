@@ -20,7 +20,6 @@ defineEmits<{'update:visible': [v: boolean]}>();
 		:visible="visible"
 		@update:visible="$emit('update:visible', $event)"
 		append-to="body"
-		dismissable-mask
 		modal>
 		<slot />
 	</Dialog>

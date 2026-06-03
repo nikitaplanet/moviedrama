@@ -16,6 +16,7 @@ create table if not exists watchlist_entries (
   note        text        not null default '',
   year        integer,
   sort_order  integer     not null default 0,
+  poster_url  text,
   added_at    timestamptz not null default now(),
   created_at  timestamptz not null default now()
 );
@@ -40,6 +41,7 @@ create table if not exists ranking_entries (
   note        text        not null default '',
   year        integer,
   rank_order  integer     not null default 0,
+  poster_url  text,
   added_at    timestamptz not null default now(),
   created_at  timestamptz not null default now()
 );

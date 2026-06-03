@@ -2,11 +2,14 @@
 import {ref, onMounted} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {Icon} from '@iconify/vue';
+import dayjs from 'dayjs';
 import {useEntryShare} from '../composables/useEntryShare';
 import {useAuth} from '../composables/useAuth';
 import {useWatchlist} from '../composables/useWatchlist';
 import type {EntryShare} from '../composables/useEntryShare';
 import {getFlag, STATUS_META} from '../types';
+
+const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 
 const route = useRoute();
 const router = useRouter();
@@ -67,7 +70,7 @@ function handleAdd() {
 		<div v-else-if="share" class="w-full max-w-sm">
 			<!-- Sender info -->
 			<div class="mb-6 text-center">
-				<p class="kicker mb-1">私人放映室</p>
+				<p class="kicker mb-1">FILMVERSE</p>
 				<div class="mt-3 flex items-center justify-center gap-2">
 					<span
 						class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium"
@@ -90,7 +93,12 @@ function handleAdd() {
 
 			<!-- Entry card -->
 			<div class="ticket">
-				<div class="body" style="padding-left: 18px">
+				<img
+					v-if="share.entry_data.posterUrl"
+					:src="share.entry_data.posterUrl"
+					:alt="share.entry_data.title"
+					class="aspect-movieCover ml-3 w-20 flex-none self-center rounded object-cover" />
+				<div class="body" :style="share.entry_data.posterUrl ? 'padding-left:12px' : 'padding-left:18px'">
 					<div class="toprow">
 						<span class="catpill">{{ share.entry_data.category }}</span>
 						<span class="ctry">
@@ -99,8 +107,8 @@ function handleAdd() {
 						</span>
 					</div>
 					<h3>{{ share.entry_data.title }}</h3>
-					<div v-if="share.entry_data.titleEn || share.entry_data.year" class="ensub">
-						{{ [share.entry_data.titleEn, share.entry_data.year].filter(Boolean).join(' · ') }}
+					<div v-if="share.entry_data.titleEn || share.entry_data.releaseDate" class="ensub">
+						{{ [share.entry_data.titleEn, share.entry_data.releaseDate ? formatDate(share.entry_data.releaseDate) : null].filter(Boolean).join(' · ') }}
 					</div>
 					<div class="midrow">
 						<span class="statuschip">
@@ -109,6 +117,14 @@ function handleAdd() {
 						</span>
 					</div>
 					<p v-if="share.entry_data.note" class="note">{{ share.entry_data.note }}</p>
+					<div v-if="share.entry_data.status === '即將上映'" class="mt-1 flex items-center justify-end">
+						<span
+							class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-sans text-[9px] font-semibold tracking-[.12em]"
+							style="background:rgba(123,94,167,0.12); color:#7B5EA7; border:1px solid rgba(123,94,167,0.25)">
+							<Icon class="h-2.5 w-2.5" icon="mdi:clock-outline" />
+							即將上映
+						</span>
+					</div>
 				</div>
 			</div>
 

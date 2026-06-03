@@ -13,7 +13,7 @@
 					><span v-if="item.rating > 0" class="ml-2 inline-block">{{ '★'.repeat(Math.round(item.rating)) }}</span>
 				</div>
 			</div>
-			<div>The Reel List</div>
+			<div>FILMVERSE</div>
 		</div>
 
 		<button class="mt-5" :class="['copy-btn', copied && 'ok']" @click="doCopy" type="button">
@@ -38,7 +38,7 @@ const shareText = computed(() => {
 		return `${n}  ${f.title}${meta}${star}`;
 	});
 
-	return `推薦片單 — TOP ${props.entries.length}\n────────────\n${lines.join('\n')}\n────────────\nThe Reel List`;
+	return `推薦片單 — TOP ${props.entries.length}\n────────────\n${lines.join('\n')}\n────────────\nFILMVERSE`;
 });
 
 const copied = ref(false);

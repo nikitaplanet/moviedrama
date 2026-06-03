@@ -33,6 +33,8 @@ export function useEntryShare() {
           rating: entry.rating,
           note: entry.note,
           status: entry.status,
+          posterUrl: entry.posterUrl,
+          releaseDate: entry.releaseDate,
         },
         message,
         source,

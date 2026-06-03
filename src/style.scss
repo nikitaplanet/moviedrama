@@ -4,11 +4,22 @@
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.15s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active .poster-zoom,
+.fade-leave-active .poster-zoom {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.fade-enter-from .poster-zoom,
+.fade-leave-to .poster-zoom {
+  transform: scale(0.92);
   opacity: 0;
 }
 
@@ -170,7 +181,7 @@
    Film card — ticket style
    ============================================================ */
 .ticket {
-  @apply relative mb-3 flex items-stretch rounded-[var(--radius)] border border-[var(--line)] bg-[var(--card)];
+  @apply relative mb-3 flex flex-wrap items-stretch rounded-[var(--radius)] border border-[var(--line)] bg-[var(--card)] py-4;
 }
 
 .ticket-drag {
@@ -216,7 +227,7 @@
 }
 
 .ticket .ensub {
-  @apply font-sans text-[10px] font-normal uppercase leading-none tracking-[.2em] text-[var(--ink-faint)];
+  @apply font-sans text-[10px] font-normal uppercase tracking-[.2em] text-[var(--ink-faint)];
 }
 
 .ticket .midrow {
@@ -242,8 +253,12 @@
   sans-serif;
 }
 
+.ticket-footer {
+  @apply w-full border-t border-[var(--line)] px-[18px] pb-[14px] pt-[11px];
+}
+
 .ticket .note {
-  @apply m-0 whitespace-pre-wrap border-t border-[var(--line)] pt-[11px] text-[var(--ink-soft)];
+  @apply m-0 whitespace-pre-wrap text-[var(--ink-soft)];
   font: 400 13px/1.65 'Noto Sans TC',
   'Lato',
   sans-serif;
@@ -323,6 +338,19 @@
   font: 400 16px/1 'Noto Sans TC',
   'Lato',
   sans-serif;
+}
+
+.info-chip {
+  @apply inline-flex items-center rounded-full px-2 py-0.5 font-sans text-[10px] tracking-wide;
+  background: var(--line);
+  color: var(--ink-soft);
+}
+
+.rank-mini-label {
+  margin: 0 0 5px;
+  font: 700 10px/1 'Lato', sans-serif;
+  letter-spacing: 0.14em;
+  opacity: 0.8;
 }
 
 /* ============================================================

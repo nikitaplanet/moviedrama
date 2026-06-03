@@ -42,7 +42,7 @@ function switchMode(m: 'login' | 'signup') {
 	<div class="flex min-h-dvh items-center justify-center px-6" style="background: var(--paper)">
 		<div class="w-full max-w-sm">
 			<div class="mb-8 text-center">
-				<p class="kicker mb-1">私人放映室</p>
+				<p class="kicker mb-1">FILMVERSE</p>
 				<h1 class="pg-title pt-2">{{ mode === 'login' ? '登入' : '註冊' }}</h1>
 			</div>
 

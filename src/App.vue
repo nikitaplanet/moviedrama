@@ -166,7 +166,7 @@ async function handleSignOut() {
     />
 
     <main class="flex-1 overflow-y-auto">
-      <div class="mx-auto max-w-xl px-[22px] pb-24 pt-4 md:pb-10">
+      <div class="mx-auto max-w-2xl px-[22px] pb-24 pt-4 md:pb-10">
         <RouterView v-slot="{ Component }">
           <Transition name="page-fade">
             <component :is="Component" :key="$route.path" />

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import dayjs from 'dayjs'
 import { Icon } from '@iconify/vue'
 import AppDialog from '../atoms/AppDialog.vue'
 import type { Entry } from '../../types'
@@ -52,14 +53,30 @@ async function copy() {
       </div>
 
       <!-- Entry preview -->
-      <div class="rounded-xl px-4 py-3" style="background: var(--paper-2); border: 1px solid var(--line)">
-        <p class="flex items-center justify-start text-[11px] tracking-wide" style="color: var(--ink-soft)">
-          {{ entry.category }}
-          <span v-if="entry.country">&nbsp;/ {{ getFlag(entry.country) }} {{ entry.country }}</span>
-          <span v-if="entry.year">&nbsp;/ {{ entry.year }}</span>
-        </p>
-        <p class="mt-2 text-base font-medium leading-snug tracking-wider" style="color: var(--ink)">{{ entry.title }}</p>
-        <p v-if="entry.titleEn" class="text-[11px] uppercase tracking-wider" style="color: var(--ink-soft)">{{ entry.titleEn }}</p>
+      <div class="flex items-start gap-3 rounded-xl p-3" style="background: var(--paper-2); border: 1px solid var(--line)">
+        <img
+          v-if="entry.posterUrl"
+          :src="entry.posterUrl"
+          :alt="entry.title"
+          class="aspect-movieCover w-14 flex-none rounded object-cover" />
+        <div class="min-w-0 flex-1">
+          <p class="flex flex-wrap items-center gap-x-1.5 text-[11px] tracking-wide" style="color: var(--ink-soft)">
+            <span>{{ entry.category }}</span>
+            <span v-if="entry.country">· {{ getFlag(entry.country) }} {{ entry.country }}</span>
+          </p>
+          <p class="mt-1.5 text-base font-medium leading-snug tracking-wider" style="color: var(--ink)">{{ entry.title }}</p>
+          <p v-if="entry.titleEn || entry.releaseDate" class="mt-0.5 text-[11px] uppercase tracking-wider" style="color: var(--ink-soft)">
+            {{ [entry.titleEn, entry.releaseDate ? dayjs(entry.releaseDate).format('YYYY.MM.DD') : null].filter(Boolean).join(' · ') }}
+          </p>
+          <div v-if="entry.status === '即將上映'" class="mt-1.5">
+            <span
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-sans text-[9px] font-semibold tracking-[.12em]"
+              style="background:rgba(123,94,167,0.12); color:#7B5EA7; border:1px solid rgba(123,94,167,0.25)">
+              <Icon class="h-2.5 w-2.5" icon="mdi:clock-outline" />
+              即將上映
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Message input (before generating) -->

@@ -18,6 +18,9 @@ function toEntry(row: Record<string, unknown>): Entry {
     note:      row.note       as string,
     year:      row.year       as number | undefined,
     addedAt:   row.added_at   as string,
+    posterUrl: row.poster_url as string | undefined,
+    tmdbData:  row.tmdb_data  as Record<string, unknown> | undefined,
+    overview:  row.overview   as string | undefined,
   }
 }
 
@@ -65,6 +68,9 @@ export function useRanking() {
           rating:     data.rating,
           note:       data.note,
           year:       data.year ?? null,
+          poster_url: data.posterUrl ?? null,
+          tmdb_data:  data.tmdbData  ?? null,
+          overview:   data.overview  ?? null,
           rank_order: 0,
         })
         .select()
@@ -94,7 +100,10 @@ export function useRanking() {
     if (patch.status   !== undefined) payload.status   = patch.status
     if (patch.rating   !== undefined) payload.rating   = patch.rating
     if (patch.note     !== undefined) payload.note     = patch.note
-    if (patch.year     !== undefined) payload.year     = patch.year ?? null
+    if (patch.year      !== undefined) payload.year       = patch.year ?? null
+    if (patch.posterUrl !== undefined) payload.poster_url = patch.posterUrl ?? null
+    if (patch.tmdbData  !== undefined) payload.tmdb_data  = patch.tmdbData  ?? null
+    if (patch.overview  !== undefined) payload.overview   = patch.overview  ?? null
     await withLoading(async () => { await supabase.from('ranking_entries').update(payload).eq('id', id) })
   }
 

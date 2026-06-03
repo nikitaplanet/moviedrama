@@ -18,8 +18,12 @@ function toEntry(row: Record<string, unknown>): Entry {
     note:          row.note           as string,
     year:          row.year           as number | undefined,
     addedAt:       row.added_at       as string,
+    posterUrl:     row.poster_url     as string | undefined,
     recommendedBy:   row.recommended_by   as string | undefined,
     recommendedNote: row.recommended_note as string | undefined,
+    tmdbData:      row.tmdb_data      as Record<string, unknown> | undefined,
+    releaseDate:   row.release_date   as string | undefined,
+    overview:      row.overview       as string | undefined,
   }
 }
 
@@ -36,7 +40,16 @@ export function useWatchlist() {
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false })
       entries.value = (data ?? []).map(toEntry)
+      await promoteReleased()
     })
+  }
+
+  async function promoteReleased() {
+    const today = new Date().toISOString().slice(0, 10)
+    const toPromote = entries.value.filter(
+      e => e.status === '即將上映' && e.releaseDate && e.releaseDate <= today,
+    )
+    await Promise.all(toPromote.map(e => update(e.id, { status: '待看' })))
   }
 
   async function loadPublic(uid: string) {
@@ -67,8 +80,12 @@ export function useWatchlist() {
           rating:         data.rating,
           note:           data.note,
           year:           data.year ?? null,
+          poster_url:       data.posterUrl       ?? null,
           recommended_by:   data.recommendedBy   ?? null,
           recommended_note: data.recommendedNote ?? null,
+          tmdb_data:        data.tmdbData        ?? null,
+          release_date:     data.releaseDate     ?? null,
+          overview:         data.overview        ?? null,
           sort_order:       0,
         })
         .select()
@@ -93,7 +110,11 @@ export function useWatchlist() {
     if (patch.status   !== undefined) payload.status   = patch.status
     if (patch.rating   !== undefined) payload.rating   = patch.rating
     if (patch.note     !== undefined) payload.note     = patch.note
-    if (patch.year     !== undefined) payload.year     = patch.year ?? null
+    if (patch.year      !== undefined) payload.year       = patch.year ?? null
+    if (patch.posterUrl !== undefined) payload.poster_url = patch.posterUrl ?? null
+    if (patch.tmdbData    !== undefined) payload.tmdb_data    = patch.tmdbData    ?? null
+    if (patch.releaseDate !== undefined) payload.release_date = patch.releaseDate ?? null
+    if (patch.overview    !== undefined) payload.overview     = patch.overview    ?? null
     await withLoading(async () => { await supabase.from('watchlist_entries').update(payload).eq('id', id) })
   }
 

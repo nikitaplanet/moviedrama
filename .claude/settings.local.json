@@ -24,7 +24,8 @@
       "Bash(curl -sI https://moviedrama-iota.vercel.app)",
       "Bash(pnpm build *)",
       "Bash(grep *)",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(npx vue-tsc *)"
     ]
   }
 }
