@@ -100,8 +100,8 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 		<img
 			v-if="entry.posterUrl"
 			:alt="entry.title"
-			:src="entry.posterUrl"
-			:class="['w-32 flex-none cursor-pointer self-center rounded-md object-cover', (readonly || !sortable) && 'ml-5']"
+			:data-src="entry.posterUrl"
+			:class="['lazyload w-32 flex-none cursor-pointer self-center rounded-md object-cover', (readonly || !sortable) && 'ml-5']"
 			@click="showPoster = true" />
 		<div :style="(readonly || !sortable) && !entry.posterUrl ? 'padding-left: 20px' : entry.posterUrl ? 'padding-left: 12px' : ''" class="body">
 			<!-- Top row: category · country -->

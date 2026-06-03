@@ -96,8 +96,8 @@ function handleAdd() {
 				<img
 					v-if="share.entry_data.posterUrl"
 					:alt="share.entry_data.title"
-					:src="share.entry_data.posterUrl"
-					class="ml-3 w-20 flex-none self-center rounded object-cover" />
+					:data-src="share.entry_data.posterUrl"
+					class="lazyload ml-3 w-20 flex-none self-center rounded object-cover" />
 				<div :style="share.entry_data.posterUrl ? 'padding-left:12px' : 'padding-left:18px'" class="body">
 					<div class="toprow">
 						<span class="catpill">{{ share.entry_data.category }}</span>

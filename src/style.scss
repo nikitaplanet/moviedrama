@@ -780,3 +780,12 @@
     transform: scale(0.95);
   }
 }
+
+.lazyload,
+.lazyloading {
+  opacity: 0;
+}
+.lazyloaded {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}

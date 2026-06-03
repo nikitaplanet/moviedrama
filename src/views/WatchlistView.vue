@@ -265,7 +265,6 @@ async function copyUrl() {
 		<div class="mt-3">
 			<FilterBar
 				:counts="categoryCounts"
-				:disabled="isReadonly"
 				:filters="activeFilters"
 				:search="search"
 				:show-search="isReadonly"

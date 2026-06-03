@@ -56,9 +56,9 @@ async function copy() {
       <div class="flex items-start gap-3 rounded-xl p-3" style="background: var(--paper-2); border: 1px solid var(--line)">
         <img
           v-if="entry.posterUrl"
-          :src="entry.posterUrl"
+          :data-src="entry.posterUrl"
           :alt="entry.title"
-          class=" w-14 flex-none rounded object-cover" />
+          class="lazyload w-14 flex-none rounded object-cover" />
         <div class="min-w-0 flex-1">
           <p class="flex flex-wrap items-center gap-x-1.5 text-[11px] tracking-wide" style="color: var(--ink-soft)">
             <span>{{ entry.category }}</span>

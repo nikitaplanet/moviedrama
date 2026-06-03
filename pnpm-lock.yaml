@@ -17,6 +17,9 @@ importers:
       dayjs:
         specifier: ^1.11.21
         version: 1.11.21
+      lazysizes:
+        specifier: ^5.3.2
+        version: 5.3.2
       lenis:
         specifier: ^1.3.23
         version: 1.3.23(vue@3.5.35(typescript@6.0.3))
@@ -609,6 +612,9 @@ packages:
   jiti@1.21.7:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
+
+  lazysizes@5.3.2:
+    resolution: {integrity: sha512-22UzWP+Vedi/sMeOr8O7FWimRVtiNJV2HCa+V8+peZOw6QbswN9k58VUhd7i6iK5bw5QkYrF01LJbeJe0PV8jg==}
 
   lenis@1.3.23:
     resolution: {integrity: sha512-YxYq3TJqj9sJNv0V9SkyQHejt14xwyIwgDaaMK89Uf9SxQfIszu+gTQSSphh6BWlLTNVKvvXAGkg+Zf+oFIevg==}
@@ -1532,6 +1538,8 @@ snapshots:
   is-number@7.0.0: {}
 
   jiti@1.21.7: {}
+
+  lazysizes@5.3.2: {}
 
   lenis@1.3.23(vue@3.5.35(typescript@6.0.3)):
     optionalDependencies:

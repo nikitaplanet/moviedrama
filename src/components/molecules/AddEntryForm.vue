@@ -198,7 +198,7 @@ function confirmDuplicate() {
 								class="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-black/5"
 								@click="fillFromTmdb(r)"
 								type="button">
-								<img v-if="r.posterUrl" :alt="r.title" :src="r.posterUrl" class="h-14 w-10 flex-none rounded object-cover" />
+								<img v-if="r.posterUrl" :alt="r.title" :data-src="r.posterUrl" class="lazyload h-14 w-10 flex-none rounded object-cover" />
 								<div v-else class="flex h-14 w-10 flex-none items-center justify-center rounded bg-line">
 									<Icon class="h-5 w-5 text-ink-faint" icon="mdi:image-off-outline" />
 								</div>
@@ -215,7 +215,7 @@ function confirmDuplicate() {
 
 					<!-- Movie info display card -->
 					<div v-if="form.title" class="mb-4 flex items-start gap-3 rounded-xl border border-line bg-paper-2 p-3">
-						<img v-if="form.posterUrl" :alt="form.title" :src="form.posterUrl" class="h-20 w-14 flex-none rounded object-cover" />
+						<img v-if="form.posterUrl" :alt="form.title" :data-src="form.posterUrl" class="lazyload h-20 w-14 flex-none rounded object-cover" />
 						<div v-else class="flex h-20 w-14 flex-none items-center justify-center rounded bg-line">
 							<Icon class="h-6 w-6 text-ink-faint" icon="mdi:image-off-outline" />
 						</div>

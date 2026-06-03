@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import PrimeVue from 'primevue/config'
 import Lenis from 'lenis'
+import 'lazysizes'
 import './style.scss'
 import App from './App.vue'
 import router from './router'

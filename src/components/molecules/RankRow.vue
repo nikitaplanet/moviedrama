@@ -77,8 +77,8 @@ function handleConfirmDelete() {
 		<img
 			v-if="entry.posterUrl"
 			:alt="entry.title"
-			:src="entry.posterUrl"
-			class="w-32 flex-none cursor-pointer self-center rounded-md object-cover"
+			:data-src="entry.posterUrl"
+			class="lazyload w-32 flex-none cursor-pointer self-center rounded-md object-cover"
 			@click="showPoster = true" />
 
 		<!-- Body -->
@@ -166,7 +166,7 @@ function handleConfirmDelete() {
 				@click.self="showDetail = false"
 				style="background: rgba(0, 0, 0, 0.6)">
 				<div
-					class="relative flex w-full max-w-[540px] flex-col overflow-hidden rounded-t-2xl sm:h-[480px] sm:flex-row sm:rounded-2xl"
+					class="relative flex w-full max-w-[800px] flex-col overflow-hidden rounded-t-2xl sm:h-[480px] sm:flex-row sm:rounded-2xl"
 					@click.stop
 					style="background: var(--card); max-height: 90vh">
 					<button
@@ -181,7 +181,7 @@ function handleConfirmDelete() {
 						v-if="largePosterUrl ?? entry.posterUrl"
 						:alt="entry.title"
 						:src="largePosterUrl ?? entry.posterUrl"
-						class="h-52 w-full flex-none object-cover object-top sm:h-full sm:w-auto" />
+						class="h-52 w-full flex-none object-cover object-top sm:aspect-movieCover sm:h-full sm:w-auto" />
 					<!-- Info: below poster on mobile, right column on desktop -->
 					<div class="min-h-0 flex-1 overflow-y-auto p-5">
 						<h2 class="text-xl font-semibold leading-snug" style="color: var(--ink)">{{ entry.title }}</h2>
