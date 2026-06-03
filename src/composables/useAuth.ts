@@ -53,6 +53,22 @@ export function useAuth() {
     return (data?.username as string) ?? ''
   }
 
+  async function fetchRecentProfiles(
+    excludeUid: string,
+    excludeUids: string[],
+  ): Promise<Array<{ id: string; username: string }>> {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .neq('id', excludeUid)
+      .order('created_at', { ascending: false })
+      .limit(20)
+    return (data ?? [])
+      .filter((u) => u.username && !excludeUids.includes(u.id as string))
+      .slice(0, 5)
+      .map((u) => ({ id: u.id as string, username: u.username as string }))
+  }
+
   async function updateUsername(name: string) {
     if (!user.value) return
     await supabase.from('profiles').update({ username: name }).eq('id', user.value.id)
@@ -76,6 +92,7 @@ export function useAuth() {
     signUp,
     signOut,
     fetchUsername,
+    fetchRecentProfiles,
     updateUsername,
     updatePassword,
   }

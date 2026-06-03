@@ -4,7 +4,9 @@ import {Icon} from '@iconify/vue';
 import type {Entry, EntryCategory, EntryStatus} from '../../types';
 import {STATUSES, getFlag} from '../../types';
 import {useTmdb, type TmdbResult} from '../../composables/useTmdb';
+import {useWatchlist} from '../../composables/useWatchlist';
 import StarRating from '../atoms/StarRating.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 const props = withDefaults(defineProps<{defaultStatus?: EntryStatus; entry?: Entry}>(), {defaultStatus: '待看'});
 const emit = defineEmits<{
@@ -14,6 +16,9 @@ const emit = defineEmits<{
 }>();
 
 const isEdit = computed(() => !!props.entry);
+const {entries} = useWatchlist();
+const showDuplicateConfirm = ref(false);
+let pendingData: Omit<Entry, 'id' | 'addedAt'> | null = null;
 
 const form = reactive({
 	title: props.entry?.title ?? '',
@@ -103,21 +108,49 @@ function submit() {
 		overview:    form.overview,
 	};
 	if (isEdit.value) {
+		const isDuplicate = entries.value.some(
+			(e) => e.title === data.title && e.id !== props.entry!.id,
+		);
+		if (isDuplicate) {
+			pendingData = data;
+			showDuplicateConfirm.value = true;
+			return;
+		}
 		emit('update', data);
 	} else {
-		emit('add', data);
-		form.title = '';
-		form.titleEn = '';
-		form.country = '';
-		form.status = props.defaultStatus as EntryStatus;
-		form.rating = 0;
-		form.note = '';
-		form.year = undefined;
-		form.posterUrl = '';
-		form.tmdbData = undefined;
-		form.releaseDate = undefined;
-		form.overview = undefined;
+		const isDuplicate = entries.value.some((e) => e.title === data.title);
+		if (isDuplicate) {
+			pendingData = data;
+			showDuplicateConfirm.value = true;
+			return;
+		}
+		doAdd(data);
 	}
+}
+
+function doAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
+	emit('add', data);
+	form.title = '';
+	form.titleEn = '';
+	form.country = '';
+	form.status = props.defaultStatus as EntryStatus;
+	form.rating = 0;
+	form.note = '';
+	form.year = undefined;
+	form.posterUrl = '';
+	form.tmdbData = undefined;
+	form.releaseDate = undefined;
+	form.overview = undefined;
+}
+
+function confirmDuplicate() {
+	if (!pendingData) return;
+	if (isEdit.value) {
+		emit('update', pendingData);
+	} else {
+		doAdd(pendingData);
+	}
+	pendingData = null;
 }
 </script>
 
@@ -139,7 +172,7 @@ function submit() {
 					<div class="relative mb-3">
 						<label
 							>{{ form.title ? '重新搜尋' : '搜尋影劇' }} <span class="font-sans text-[9px] tracking-widest opacity-50">TMDB</span>
-							<div class="mt-1 flex items-center gap-2 pb-1.5" style="border-bottom: 1px solid var(--line)">
+							<div class="mt-1 flex items-center gap-2 pb-1.5">
 								<Icon class="h-4 w-4 flex-none" style="color:var(--ink-faint)" icon="mdi:magnify" />
 								<input
 									v-model="tmdbQuery"
@@ -248,4 +281,10 @@ function submit() {
 			</div>
 		</div>
 	</div>
+
+	<ConfirmDialog
+		v-model:visible="showDuplicateConfirm"
+		title="重複片名"
+		:message="`《${form.title.trim()}》已在片單中，確定要再次新增嗎？`"
+		@confirm="confirmDuplicate" />
 </template>

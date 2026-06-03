@@ -197,7 +197,7 @@ async function copyUrl() {
 <template>
 	<div>
 		<!-- Readonly banner -->
-		<div v-if="isReadonly" class="mb-4 flex flex-col gap-2">
+		<div v-if="isReadonly" class="mb-4 flex flex-col gap-5">
 			<div
 				class="rounded-md px-4 py-2 text-center text-sm"
 				style="background: rgba(176, 71, 60, 0.08); color: var(--accent); border: 1px solid rgba(176, 71, 60, 0.2)">

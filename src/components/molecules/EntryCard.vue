@@ -10,6 +10,7 @@ import ConfirmDialog from './ConfirmDialog.vue';
 import ShareEntryDialog from './ShareEntryDialog.vue';
 import {useTmdb, type TmdbDetail} from '../../composables/useTmdb';
 import {useScrollLock} from '../../composables/useScrollLock';
+import {useWatchlist} from '../../composables/useWatchlist';
 
 const props = withDefaults(
 	defineProps<{
@@ -31,9 +32,15 @@ const emit = defineEmits<{
 const showEditSheet = ref(false);
 const showConfirm = ref(false);
 const showShare = ref(false);
+const showImportConfirm = ref(false);
 const imported = ref(false);
 const showPoster = ref(false);
 const showDetail = ref(false);
+
+const {entries: myEntries} = useWatchlist();
+const alreadyInList = computed(() =>
+	props.addable && myEntries.value.some((e) => e.title === props.entry.title),
+);
 const detail = ref<TmdbDetail | null>(null);
 const detailLoading = ref(false);
 
@@ -56,7 +63,13 @@ useScrollLock(anyOverlay);
 
 const largePosterUrl = computed(() => props.entry.posterUrl?.replace('/w200/', '/w500/') ?? props.entry.posterUrl);
 
-function handleImport() {
+function handleImportClick() {
+	if (alreadyInList.value) return;
+	showImportConfirm.value = true;
+}
+
+function confirmImport() {
+	showImportConfirm.value = false;
 	emit('import-entry', props.entry);
 	imported.value = true;
 	setTimeout(() => {
@@ -132,14 +145,18 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 						<Icon class="h-3.5 w-3.5" icon="mdi:delete-outline" />
 					</button>
 				</span>
+			</div>
+
+			<!-- Add to watchlist button (addable mode) — own row, right-aligned, above note -->
+			<div v-if="addable" class="flex justify-end pr-[18px]">
 				<button
-					v-if="addable"
-					:title="imported ? '已加入' : '加入我的片單'"
-					class="rk-arrow ml-auto flex items-center gap-1"
-					@click="handleImport"
+					:disabled="alreadyInList || imported"
+					:title="alreadyInList ? '已在片單中' : imported ? '已加入' : '加入我的片單'"
+					class="rk-arrow !w-auto px-2 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+					@click="handleImportClick"
 					type="button">
-					<Icon :icon="imported ? 'mdi:check' : 'mdi:playlist-plus'" class="h-3.5 w-3.5" />
-					<span class="font-sans text-[10px] tracking-wide">{{ imported ? '已加入' : '加入片單' }}</span>
+					<Icon :icon="alreadyInList || imported ? 'mdi:check' : 'mdi:playlist-plus'" class="h-3.5 w-3.5" />
+					<span class="font-sans text-[10px] tracking-wide">{{ alreadyInList ? '已在片單' : imported ? '已加入' : '加入片單' }}</span>
 				</button>
 			</div>
 
@@ -208,7 +225,7 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 						v-if="largePosterUrl ?? entry.posterUrl"
 						:alt="entry.title"
 						:src="largePosterUrl ?? entry.posterUrl"
-						class="h-52 w-full flex-none object-cover object-top sm:h-full sm:w-auto sm:aspect-movieCover" />
+						class="h-52 w-full flex-none object-cover object-top sm:aspect-movieCover sm:h-full sm:w-auto" />
 					<!-- Info: below poster on mobile, right column on desktop -->
 					<div class="min-h-0 flex-1 overflow-y-auto p-5">
 						<h2 class="text-xl font-semibold leading-snug" style="color: var(--ink)">{{ entry.title }}</h2>
@@ -258,5 +275,10 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 		title="確認刪除"
 		:message="`確定要刪除《${entry.title}》嗎？此操作無法復原。`"
 		@confirm="handleConfirmDelete" />
+	<ConfirmDialog
+		v-model:visible="showImportConfirm"
+		title="加入片單"
+		:message="`確定要將《${entry.title}》加入我的片單嗎？`"
+		@confirm="confirmImport" />
 	<ShareEntryDialog v-model:visible="showShare" :entry="entry" source="watchlist" />
 </template>
