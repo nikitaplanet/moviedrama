@@ -153,6 +153,11 @@ function handleAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
 	showAddForm.value = false;
 }
 
+function handleImport(entry: Entry) {
+	const { id: _id, addedAt: _addedAt, ...data } = entry
+	add(data)
+}
+
 async function copyUrl() {
 	if (!user.value) return;
 	const {copy} = useShare();
@@ -285,8 +290,10 @@ async function copyUrl() {
 					:rank="pageStart + idx + 1"
 					:readonly="isReadonly"
 					:sortable="false"
+					:addable="isReadonly && !!user"
 					@remove="remove"
-					@update="update" />
+					@update="update"
+					@import-entry="handleImport" />
 			</div>
 
 			<!-- Pagination -->

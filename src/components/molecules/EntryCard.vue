@@ -16,17 +16,26 @@ const props = withDefaults(
 		readonly?: boolean;
 		dragging?: boolean;
 		sortable?: boolean;
+		addable?: boolean;
 	}>(),
-	{readonly: false, dragging: false, sortable: true},
+	{readonly: false, dragging: false, sortable: true, addable: false},
 );
 const emit = defineEmits<{
 	remove: [id: string];
 	update: [id: string, patch: Partial<Omit<Entry, 'id' | 'addedAt'>>];
+	'import-entry': [entry: Entry];
 }>();
 
 const showEditSheet = ref(false);
 const showConfirm = ref(false);
 const showShare = ref(false);
+const imported = ref(false);
+
+function handleImport() {
+	emit('import-entry', props.entry);
+	imported.value = true;
+	setTimeout(() => { imported.value = false }, 2000);
+}
 
 function handleUpdate(data: Omit<Entry, 'id' | 'addedAt'>) {
 	emit('update', props.entry.id, data);
@@ -86,6 +95,10 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 						<Icon class="h-3.5 w-3.5" icon="mdi:delete-outline" />
 					</button>
 				</span>
+				<button v-if="addable" class="rk-arrow ml-auto flex items-center gap-1" :title="imported ? '已加入' : '加入我的片單'" type="button" @click="handleImport">
+					<Icon class="h-3.5 w-3.5" :icon="imported ? 'mdi:check' : 'mdi:playlist-plus'" />
+					<span class="font-sans text-[10px] tracking-wide">{{ imported ? '已加入' : '加入片單' }}</span>
+				</button>
 			</div>
 
 			<!-- Note -->
