@@ -161,7 +161,6 @@ function trueRank(entry: Entry) {
 	<div class="mt-1">
 		<FilterBar
 			:counts="categoryCounts"
-			:disabled="isReadonly"
 			:filters="activeFilters"
 			:show-search="false"
 			:show-sort="false"
