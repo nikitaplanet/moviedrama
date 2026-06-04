@@ -254,7 +254,7 @@
 }
 
 .ticket-footer {
-  @apply w-full border-t border-[var(--line)] px-[18px] pb-[14px] pt-[11px];
+  @apply w-full border-t border-[var(--line)] px-[18px] pb-[14px] pt-[11px] mt-2;
 }
 
 .ticket .note {

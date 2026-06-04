@@ -5,14 +5,16 @@ import { supabase } from '../lib/supabase'
 const user = ref<User | null>(null)
 const loading = ref(true)
 const username = ref('')
+const avatarUrl = ref('')
 
 async function loadUsername(uid: string) {
   const { data } = await supabase
     .from('profiles')
-    .select('username')
+    .select('username, avatar_url')
     .eq('id', uid)
     .single()
   username.value = (data?.username as string) ?? ''
+  avatarUrl.value = (data?.avatar_url as string) ?? ''
 }
 
 // onAuthStateChange fires INITIAL_SESSION on subscribe — no need for a separate getSession() call.
@@ -24,7 +26,7 @@ supabase.auth.onAuthStateChange((event, session) => {
   }
   user.value = session?.user ?? null
   if (user.value) loadUsername(user.value.id)
-  else username.value = ''
+  else { username.value = ''; avatarUrl.value = '' }
   loading.value = false
 })
 
@@ -80,6 +82,20 @@ export function useAuth() {
     if (error) throw error
   }
 
+  async function uploadAvatar(file: File): Promise<void> {
+    if (!user.value) return
+    const uid = user.value.id
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(uid, file, { upsert: true, contentType: file.type })
+    if (uploadError) throw uploadError
+    const { data } = supabase.storage.from('avatars').getPublicUrl(uid)
+    // bust cache with a timestamp query param
+    const url = `${data.publicUrl}?t=${Date.now()}`
+    await supabase.from('profiles').update({ avatar_url: url }).eq('id', uid)
+    avatarUrl.value = url
+  }
+
   async function signOut() {
     await supabase.auth.signOut()
   }
@@ -88,6 +104,7 @@ export function useAuth() {
     user: readonly(user),
     loading: readonly(loading),
     username: readonly(username),
+    avatarUrl: readonly(avatarUrl),
     signIn,
     signUp,
     signOut,
@@ -95,5 +112,6 @@ export function useAuth() {
     fetchRecentProfiles,
     updateUsername,
     updatePassword,
+    uploadAvatar,
   }
 }

@@ -181,6 +181,7 @@ function trueRank(entry: Entry) {
 					<RankRow
 						v-for="(entry, idx) in pagedDragEntries"
 						:entry="entry"
+						:existing-entries="entries"
 						:is-first="pageStart + idx === 0"
 						:is-last="pageStart + idx === entries.length - 1"
 						:key="entry.id"
@@ -196,6 +197,7 @@ function trueRank(entry: Entry) {
 					<RankRow
 						v-for="(entry, idx) in pagedEntries"
 						:entry="entry"
+						:existing-entries="entries"
 						:is-first="idx === 0 && currentPage === 1"
 						:is-last="pageStart + idx === displayEntries.length - 1"
 						:key="entry.id"
@@ -219,7 +221,7 @@ function trueRank(entry: Entry) {
 	<!-- Add form sheet -->
 	<Teleport to="body">
 		<Transition name="sheet">
-			<AddEntryForm v-if="showAddForm && !isReadonly" @add="handleAdd" @cancel="showAddForm = false" default-status="看完" />
+			<AddEntryForm v-if="showAddForm && !isReadonly" :existing-entries="entries" @add="handleAdd" @cancel="showAddForm = false" default-status="看完" />
 		</Transition>
 	</Teleport>
 </div>

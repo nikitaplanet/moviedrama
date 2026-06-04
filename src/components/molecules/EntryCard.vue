@@ -20,8 +20,9 @@ const props = withDefaults(
 		dragging?: boolean;
 		sortable?: boolean;
 		addable?: boolean;
+		existingEntries?: Entry[];
 	}>(),
-	{readonly: false, dragging: false, sortable: true, addable: false},
+	{readonly: false, dragging: false, sortable: true, addable: false, existingEntries: () => []},
 );
 const emit = defineEmits<{
 	remove: [id: string];
@@ -266,7 +267,7 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 
 	<Teleport to="body">
 		<Transition name="sheet">
-			<AddEntryForm v-if="showEditSheet" :entry="entry" @cancel="showEditSheet = false" @update="handleUpdate" />
+			<AddEntryForm v-if="showEditSheet" :entry="entry" :existing-entries="props.existingEntries" @cancel="showEditSheet = false" @update="handleUpdate" />
 		</Transition>
 	</Teleport>
 

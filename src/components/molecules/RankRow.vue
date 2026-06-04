@@ -18,6 +18,7 @@ const props = defineProps<{
 	isLast: boolean;
 	dragging?: boolean;
 	readonly?: boolean;
+	existingEntries?: Entry[];
 }>();
 const emit = defineEmits<{
 	up: [];
@@ -220,7 +221,7 @@ function handleConfirmDelete() {
 
 	<Teleport to="body">
 		<Transition name="sheet">
-			<AddEntryForm v-if="showEditSheet" :entry="props.entry" @cancel="showEditSheet = false" @update="handleUpdate" />
+			<AddEntryForm v-if="showEditSheet" :entry="props.entry" :existing-entries="props.existingEntries" @cancel="showEditSheet = false" @update="handleUpdate" />
 		</Transition>
 	</Teleport>
 

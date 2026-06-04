@@ -58,7 +58,6 @@ async function submitAdd() {
 	}
 }
 
-
 function viewWatchlist(friendUid: string) {
 	router.push({path: '/watchlist', query: {uid: friendUid}});
 }
@@ -84,26 +83,26 @@ function viewRanking(friendUid: string) {
 		<Transition name="fade">
 			<div v-if="showAddForm" class="mb-4 rounded-xl p-4" style="background: var(--card); border: 1px solid var(--line)">
 				<!-- Recent users suggestions -->
-<!--				<div v-if="suggestions.length" class="mb-3">-->
-<!--					<p class="mb-2 font-sans text-[9px] tracking-[.14em]" style="color: var(&#45;&#45;ink-faint)">最近加入的用戶</p>-->
-<!--					<div class="flex flex-col gap-1.5">-->
-<!--						<div-->
-<!--							v-for="s in suggestions"-->
-<!--							:key="s.id"-->
-<!--							class="flex items-center justify-between rounded-lg px-3 py-2"-->
-<!--							style="background: var(&#45;&#45;paper-2)">-->
-<!--							<span class="flex items-center gap-1.5 text-sm" style="color: var(&#45;&#45;ink)">-->
-<!--								<Icon class="h-3.5 w-3.5 flex-none" icon="mdi:account-circle-outline" style="color: var(&#45;&#45;ink-faint)" />-->
-<!--								{{ s.username }}-->
-<!--							</span>-->
-<!--							<button class="flex items-center gap-1" type="button" @click="quickAdd(s)">-->
-<!--								<Icon class="h-3.5 w-3.5" icon="mdi:account-plus-outline" />-->
-<!--								<span class="font-sans text-[10px]">加入</span>-->
-<!--							</button>-->
-<!--						</div>-->
-<!--					</div>-->
-<!--					<div class="my-3" style="height: 1px; background: var(&#45;&#45;line)" />-->
-<!--				</div>-->
+				<!--				<div v-if="suggestions.length" class="mb-3">-->
+				<!--					<p class="mb-2 font-sans text-[9px] tracking-[.14em]" style="color: var(&#45;&#45;ink-faint)">最近加入的用戶</p>-->
+				<!--					<div class="flex flex-col gap-1.5">-->
+				<!--						<div-->
+				<!--							v-for="s in suggestions"-->
+				<!--							:key="s.id"-->
+				<!--							class="flex items-center justify-between rounded-lg px-3 py-2"-->
+				<!--							style="background: var(&#45;&#45;paper-2)">-->
+				<!--							<span class="flex items-center gap-1.5 text-sm" style="color: var(&#45;&#45;ink)">-->
+				<!--								<Icon class="h-3.5 w-3.5 flex-none" icon="mdi:account-circle-outline" style="color: var(&#45;&#45;ink-faint)" />-->
+				<!--								{{ s.username }}-->
+				<!--							</span>-->
+				<!--							<button class="flex items-center gap-1" type="button" @click="quickAdd(s)">-->
+				<!--								<Icon class="h-3.5 w-3.5" icon="mdi:account-plus-outline" />-->
+				<!--								<span class="font-sans text-[10px]">加入</span>-->
+				<!--							</button>-->
+				<!--						</div>-->
+				<!--					</div>-->
+				<!--					<div class="my-3" style="height: 1px; background: var(&#45;&#45;line)" />-->
+				<!--				</div>-->
 
 				<p class="mb-3 font-sans text-xs tracking-widest" style="color: var(--ink-faint)">貼上對方的分享連結或 UID</p>
 				<div class="field mb-2">
@@ -125,18 +124,29 @@ function viewRanking(friendUid: string) {
 		<EmptyState v-if="friends.length === 0" hint="貼上對方的分享連結來新增好友" message="還沒有好友" />
 
 		<div v-else class="flex flex-col">
-			<article v-for="friend in friends" :key="friend.id" class="ticket px-4 flex justify-between">
-				<!-- Top row: name · date -->
-				<div>
-					<button class="flex items-center gap-1.5 transition-opacity hover:opacity-70" type="button" @click="viewRanking(friend.friendUid)">
-						<Icon class="h-3.5 w-3.5 flex-none" icon="mdi:account-circle-outline" style="color: var(--ink-faint)" />
+			<article v-for="friend in friends" :key="friend.id" class="ticket flex items-center gap-3 px-4 py-3">
+				<!-- Avatar -->
+				<button class="flex-none transition-opacity hover:opacity-70" @click="viewRanking(friend.friendUid)" type="button">
+					<img
+						v-if="friend.friendAvatarUrl"
+						:alt="friend.friendName"
+						:src="friend.friendAvatarUrl"
+						class="h-[40px] w-[40px] rounded-full object-cover" />
+					<div v-else class="flex h-[40px] w-[40px] items-center justify-center bg-black rounded-full">
+						<Icon class="h-5 w-5 text-white" icon="mdi:account-outline" />
+					</div>
+				</button>
+
+				<!-- Name + date -->
+				<div class="min-w-0 flex-1">
+					<button class="flex items-center gap-1 transition-opacity hover:opacity-70" @click="viewRanking(friend.friendUid)" type="button">
 						<span class="text-[15px] font-medium tracking-[.01em]" style="color: var(--ink)">{{ friend.friendName }}</span>
 					</button>
 					<span class="ensub">{{ dayjs(friend.createdAt).format('YYYY.MM.DD') }} 加為好友</span>
 				</div>
 
-				<!-- Actions row -->
-				<div class="flex items-center gap-4">
+				<!-- Actions -->
+				<div class="flex flex-none items-center gap-4">
 					<button class="flex items-center gap-1" @click="viewWatchlist(friend.friendUid)" type="button">
 						<Icon class="h-3.5 w-3.5" icon="mdi:format-list-bulleted" />
 						<span class="font-sans text-[10px] tracking-wide">片單</span>
@@ -145,7 +155,7 @@ function viewRanking(friendUid: string) {
 						<Icon class="h-3.5 w-3.5" icon="mdi:trophy-outline" />
 						<span class="font-sans text-[10px] tracking-wide">排行</span>
 					</button>
-					<button class="ml-auto" @click="remove(friend.id)" type="button">
+					<button @click="remove(friend.id)" type="button">
 						<Icon class="h-3.5 w-3.5" icon="mdi:delete-outline" />
 					</button>
 				</div>

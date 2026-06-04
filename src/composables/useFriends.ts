@@ -6,17 +6,19 @@ export interface Friend {
   id: string
   friendUid: string
   friendName: string
+  friendAvatarUrl: string
   createdAt: string
 }
 
 const friends = ref<Friend[]>([])
 
-function toFriend(row: Record<string, unknown>): Friend {
+function toFriend(row: Record<string, unknown>, avatarMap: Record<string, string> = {}): Friend {
   return {
-    id:         row.id          as string,
-    friendUid:  row.friend_uid  as string,
-    friendName: row.friend_name as string,
-    createdAt:  row.created_at  as string,
+    id:              row.id          as string,
+    friendUid:       row.friend_uid  as string,
+    friendName:      row.friend_name as string,
+    friendAvatarUrl: avatarMap[row.friend_uid as string] ?? '',
+    createdAt:       row.created_at  as string,
   }
 }
 
@@ -30,7 +32,18 @@ export function useFriends() {
         .select('*')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
-      friends.value = (data ?? []).map(toFriend)
+      const uids = (data ?? []).map((r) => r.friend_uid as string)
+      const avatarMap: Record<string, string> = {}
+      if (uids.length) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, avatar_url')
+          .in('id', uids)
+        ;(profiles ?? []).forEach((p) => {
+          avatarMap[p.id as string] = (p.avatar_url as string) ?? ''
+        })
+      }
+      friends.value = (data ?? []).map((r) => toFriend(r, avatarMap))
     })
   }
 

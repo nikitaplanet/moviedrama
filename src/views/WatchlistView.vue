@@ -73,7 +73,7 @@ const preStatusEntries = computed(() =>
 		if (f.country && e.country !== f.country) return false;
 		if (search.value.trim()) {
 			const q = search.value.trim().toLowerCase();
-			return e.title.toLowerCase().includes(q) || (e.titleEn ?? '').toLowerCase().includes(q) || e.country.includes(q) || e.note.includes(q);
+			return e.title.toLowerCase().includes(q) || (e.titleEn ?? '').toLowerCase().includes(q) || (e.country ?? '').includes(q) || (e.note ?? '').includes(q);
 		}
 		return true;
 	}),
@@ -304,6 +304,7 @@ async function copyUrl() {
 					<EntryCard
 						v-for="(entry, idx) in pagedDragEntries"
 						:entry="entry"
+						:existing-entries="entries"
 						:key="entry.id"
 						:rank="pageStart + idx + 1"
 						@remove="remove"
@@ -321,6 +322,7 @@ async function copyUrl() {
 							v-for="entry in group.entries"
 							:addable="isReadonly && !!user && uid !== user?.id"
 							:entry="entry"
+							:existing-entries="entries"
 							:key="entry.id"
 							:readonly="isReadonly"
 							:sortable="false"
@@ -336,6 +338,7 @@ async function copyUrl() {
 						v-for="(entry, idx) in pagedEntries"
 						:addable="isReadonly && !!user && uid !== user?.id"
 						:entry="entry"
+						:existing-entries="entries"
 						:key="entry.id"
 						:rank="pageStart + idx + 1"
 						:readonly="isReadonly"
@@ -353,7 +356,7 @@ async function copyUrl() {
 		<!-- Add form sheet -->
 		<Teleport to="body">
 			<Transition name="sheet">
-				<AddEntryForm v-if="showAddForm && !isReadonly" @add="handleAdd" @cancel="showAddForm = false" default-status="待看" />
+				<AddEntryForm v-if="showAddForm && !isReadonly" :existing-entries="entries" @add="handleAdd" @cancel="showAddForm = false" default-status="待看" />
 			</Transition>
 		</Teleport>
 	</div>

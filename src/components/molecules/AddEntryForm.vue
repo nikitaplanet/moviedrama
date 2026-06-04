@@ -4,11 +4,13 @@ import {Icon} from '@iconify/vue';
 import type {Entry, EntryCategory, EntryStatus} from '../../types';
 import {STATUSES, getFlag} from '../../types';
 import {useTmdb, type TmdbResult} from '../../composables/useTmdb';
-import {useWatchlist} from '../../composables/useWatchlist';
 import StarRating from '../atoms/StarRating.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 
-const props = withDefaults(defineProps<{defaultStatus?: EntryStatus; entry?: Entry}>(), {defaultStatus: '待看'});
+const props = withDefaults(
+	defineProps<{defaultStatus?: EntryStatus; entry?: Entry; existingEntries?: Entry[]}>(),
+	{defaultStatus: '待看', existingEntries: () => []},
+);
 const emit = defineEmits<{
 	add: [data: Omit<Entry, 'id' | 'addedAt'>];
 	update: [data: Omit<Entry, 'id' | 'addedAt'>];
@@ -16,7 +18,6 @@ const emit = defineEmits<{
 }>();
 
 const isEdit = computed(() => !!props.entry);
-const {entries} = useWatchlist();
 const showDuplicateConfirm = ref(false);
 let pendingData: Omit<Entry, 'id' | 'addedAt'> | null = null;
 
@@ -108,7 +109,7 @@ function submit() {
 		overview:    form.overview,
 	};
 	if (isEdit.value) {
-		const isDuplicate = entries.value.some(
+		const isDuplicate = props.existingEntries.some(
 			(e) => e.title === data.title && e.id !== props.entry!.id,
 		);
 		if (isDuplicate) {
@@ -118,7 +119,7 @@ function submit() {
 		}
 		emit('update', data);
 	} else {
-		const isDuplicate = entries.value.some((e) => e.title === data.title);
+		const isDuplicate = props.existingEntries.some((e) => e.title === data.title);
 		if (isDuplicate) {
 			pendingData = data;
 			showDuplicateConfirm.value = true;

@@ -21,7 +21,7 @@ const emit = defineEmits<{'update:visible': [v: boolean]; confirm: []}>();
 					@click="emit('confirm')"
 					style="background: var(--accent)"
 					type="button">
-					刪除
+					確認
 				</button>
 			</div>
 		</div>
