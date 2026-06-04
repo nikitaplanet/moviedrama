@@ -8,7 +8,7 @@ export function useFilters() {
 
   const filters = computed<FilterState>(() => ({
     category: (route.query.category as EntryCategory | '') || '',
-    country:  (route.query.country  as string)             || '',
+    language: (route.query.language  as string)             || '',
     status:   (route.query.status   as EntryStatus | '')   || '',
   }))
 
@@ -19,7 +19,7 @@ export function useFilters() {
       query: {
         ...route.query,
         category: (next.category ?? filters.value.category) || undefined,
-        country:  (next.country  ?? filters.value.country)  || undefined,
+        language: (next.language  ?? filters.value.language)  || undefined,
         status:   (next.status   ?? filters.value.status)   || undefined,
       },
     })

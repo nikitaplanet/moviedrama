@@ -43,7 +43,7 @@ const activeFilters = computed<FilterState>(() => filters.value);
 
 const sourceEntries = computed<Entry[]>(() => (isReadonly.value ? publicEntries.value : entries.value));
 
-const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country));
+const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.language));
 
 const lastUpdated = computed(() => {
 	if (!sourceEntries.value.length) return null;
@@ -55,7 +55,7 @@ const displayEntries = computed(() =>
 	sourceEntries.value.filter((e) => {
 		const f = activeFilters.value;
 		if (f.category && e.category !== f.category) return false;
-		if (f.country && e.country !== f.country) return false;
+		if (f.language && e.language !== f.language) return false;
 		return true;
 	}),
 );
@@ -85,7 +85,7 @@ const pagedDragEntries = computed({
 });
 const pagedEntries = computed(() => displayEntries.value.slice(pageStart.value, pageStart.value + PAGE_SIZE));
 
-watch([() => activeFilters.value.category, () => activeFilters.value.country], () => {
+watch([() => activeFilters.value.category, () => activeFilters.value.language], () => {
 	currentPage.value = 1;
 });
 
@@ -178,7 +178,7 @@ function trueRank(entry: Entry) {
 	<p v-if="isFiltered && !isReadonly" class="mt-2 font-sans text-[10px] tracking-[.12em] text-ink-faint">篩選中，拖曳排序已暫停</p>
 
 	<Transition mode="out-in" name="fade">
-		<div :key="`${activeFilters.category}-${activeFilters.country}`">
+		<div :key="`${activeFilters.category}-${activeFilters.language}`">
 			<!-- Empty state -->
 			<EmptyState v-if="displayEntries.length === 0" hint="新增影片或調整篩選" message="這個分類還沒有上榜影片" />
 

@@ -7,7 +7,7 @@ import {useEntryShare} from '../composables/useEntryShare';
 import {useAuth} from '../composables/useAuth';
 import {useWatchlist} from '../composables/useWatchlist';
 import type {EntryShare} from '../composables/useEntryShare';
-import {getFlag, STATUS_META} from '../types';
+import {getLangEmoji, STATUS_META} from '../types';
 
 const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 
@@ -39,7 +39,7 @@ function handleAdd() {
 		title: e.title,
 		titleEn: e.titleEn,
 		category: e.category,
-		country: e.country ?? '',
+		language: e.language ?? '',
 		year: e.year,
 		rating: 0,
 		note: e.note ?? '',
@@ -102,8 +102,8 @@ function handleAdd() {
 					<div class="toprow">
 						<span class="catpill">{{ share.entry_data.category }}</span>
 						<span class="ctry">
-							<span class="fl">{{ getFlag(share.entry_data.country ?? '') }}</span>
-							{{ share.entry_data.country || '— —' }}
+							<span class="fl">{{ getLangEmoji(share.entry_data.language ?? '') }}</span>
+							{{ share.entry_data.language || '— —' }}
 						</span>
 					</div>
 					<h3>{{ share.entry_data.title }}</h3>

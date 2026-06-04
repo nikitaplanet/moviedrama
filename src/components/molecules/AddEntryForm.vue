@@ -2,7 +2,7 @@
 import {computed, reactive, ref, watch} from 'vue';
 import {Icon} from '@iconify/vue';
 import type {Entry, EntryCategory, EntryStatus} from '../../types';
-import {STATUSES, getFlag} from '../../types';
+import {STATUSES, getLangEmoji} from '../../types';
 import {useTmdb, type TmdbResult} from '../../composables/useTmdb';
 import StarRating from '../atoms/StarRating.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
@@ -25,7 +25,7 @@ const form = reactive({
 	title: props.entry?.title ?? '',
 	titleEn: props.entry?.titleEn ?? '',
 	category: (props.entry?.category ?? '電影') as EntryCategory,
-	country: props.entry?.country ?? '',
+	language: props.entry?.language ?? '',
 	status: (props.entry?.status ?? props.defaultStatus) as EntryStatus,
 	rating: props.entry?.rating ?? 0,
 	note: props.entry?.note ?? '',
@@ -67,7 +67,7 @@ function fillFromTmdb(result: TmdbResult) {
 	form.titleEn = result.originalTitle;
 	form.year = result.year;
 	form.category = result.category;
-	form.country = result.country;
+	form.language = result.language;
 	form.posterUrl = result.posterUrl ?? '';
 	form.tmdbData = result.raw;
 	form.releaseDate = result.releaseDate;
@@ -84,7 +84,7 @@ function clearMovie() {
 	form.titleEn = '';
 	form.year = undefined;
 	form.category = '電影';
-	form.country = '';
+	form.language = '';
 	form.posterUrl = '';
 	form.tmdbData = undefined;
 	form.releaseDate = undefined;
@@ -98,7 +98,7 @@ function submit() {
 		title: form.title.trim(),
 		titleEn: form.titleEn.trim() || undefined,
 		category: form.category,
-		country: form.country,
+		language: form.language,
 		status: form.status,
 		rating: form.rating,
 		note: form.note.trim(),
@@ -133,7 +133,7 @@ function doAdd(data: Omit<Entry, 'id' | 'addedAt'>) {
 	emit('add', data);
 	form.title = '';
 	form.titleEn = '';
-	form.country = '';
+	form.language = '';
 	form.status = props.defaultStatus as EntryStatus;
 	form.rating = 0;
 	form.note = '';
@@ -207,7 +207,7 @@ function confirmDuplicate() {
 									<p class="truncate text-sm font-medium text-ink">{{ r.title }}</p>
 									<p class="truncate text-xs text-ink-faint">{{ r.originalTitle }}</p>
 									<p class="font-sans text-[10px] tracking-wide text-ink-faint">
-										{{ r.category }} · {{ r.year ?? '—' }} {{ r.country ? `· ${r.country}` : '' }}
+										{{ r.category }} · {{ r.year ?? '—' }} {{ r.language ? `· ${r.language}` : '' }}
 									</p>
 								</div>
 							</button>
@@ -228,7 +228,7 @@ function confirmDuplicate() {
 							<div class="mt-2 flex flex-wrap items-center gap-1.5">
 								<span class="info-chip">{{ form.category }}</span>
 								<span v-if="form.year" class="info-chip">{{ form.year }}</span>
-								<span class="info-chip">{{ form.country ? `${getFlag(form.country)} ${form.country}` : '未指定' }}</span>
+								<span class="info-chip">{{ form.language ? `${getLangEmoji(form.language)} ${form.language}` : '未指定' }}</span>
 								<span v-if="form.releaseDate" class="info-chip">
 									<Icon class="inline h-2.5 w-2.5 mr-0.5" icon="mdi:calendar-outline" />{{ form.releaseDate }}
 								</span>

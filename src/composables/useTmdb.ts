@@ -3,15 +3,10 @@ import type { EntryCategory } from '../types'
 const TMDB_BASE = 'https://api.themoviedb.org/3'
 const TMDB_IMG  = 'https://image.tmdb.org/t/p/w200'
 
-const COUNTRY_MAP: Record<string, string> = {
-  TW: '台灣', JP: '日本', KR: '韓國', US: '美國',
-  GB: '英國', CN: '中國', FR: '法國', TH: '泰國', HK: '香港',
-}
-
-// Fallback when origin_country is absent (movies often don't include it)
-const LANG_MAP: Record<string, string> = {
-  ja: '日本', ko: '韓國', th: '泰國', fr: '法國',
-  zh: '中國', en: '美國',
+const TMDB_LANG_MAP: Record<string, string> = {
+  zh: '中文', ja: '日語', ko: '韓語', en: '英語',
+  fr: '法語', th: '泰語', es: '西語', it: '義語',
+  de: '德語', pt: '葡語', cn: '廣東話',
 }
 
 export interface TmdbResult {
@@ -23,7 +18,7 @@ export interface TmdbResult {
   releaseDate?: string
   overview?: string
   posterUrl?: string
-  country: string
+  language: string
   category: EntryCategory
   raw: Record<string, unknown>
 }
@@ -71,11 +66,7 @@ export function useTmdb() {
       .map((r: Record<string, unknown>) => {
         const dateStr = (r.release_date ?? r.first_air_date ?? '') as string
         const releaseDate = ((r.release_date ?? r.first_air_date ?? '') as string) || undefined
-        const originCountries = (r.origin_country as string[] | undefined) ?? []
-        const country =
-          COUNTRY_MAP[originCountries[0]] ??
-          LANG_MAP[(r.original_language as string) ?? ''] ??
-          ''
+        const language = TMDB_LANG_MAP[(r.original_language as string) ?? ''] ?? ''
         return {
           id:            r.id as number,
           mediaType:     r.media_type as 'movie' | 'tv',
@@ -85,7 +76,7 @@ export function useTmdb() {
           releaseDate,
           overview:      (r.overview as string | undefined) || undefined,
           posterUrl:     r.poster_path ? `${TMDB_IMG}${r.poster_path}` : undefined,
-          country,
+          language,
           category:      (
             (r.genre_ids as number[] | undefined)?.includes(16)
               ? '動畫'

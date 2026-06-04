@@ -28,7 +28,7 @@ export function useEntryShare() {
           title: entry.title,
           titleEn: entry.titleEn,
           category: entry.category,
-          country: entry.country,
+          language: entry.language,
           year: entry.year,
           rating: entry.rating,
           note: entry.note,

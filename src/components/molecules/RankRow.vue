@@ -3,7 +3,7 @@ import {ref, computed, watch} from 'vue';
 import dayjs from 'dayjs';
 import {Icon} from '@iconify/vue';
 import type {Entry} from '../../types';
-import {CATEGORY_EN, getFlag} from '../../types';
+import {CATEGORY_EN, getLangEmoji} from '../../types';
 import AddEntryForm from './AddEntryForm.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import ShareEntryDialog from './ShareEntryDialog.vue';
@@ -78,7 +78,7 @@ function handleConfirmDelete() {
 			v-if="entry.posterUrl"
 			:alt="entry.title"
 			:data-src="entry.posterUrl"
-			class="lazyload w-32 flex-none cursor-pointer self-center rounded-md object-cover"
+			:class="['lazyload w-32 flex-none cursor-pointer self-center rounded-md object-cover', readonly && 'ml-5']"
 			@click="showPoster = true" />
 
 		<!-- Body -->
@@ -101,8 +101,8 @@ function handleConfirmDelete() {
 					{{ entry.category }}<span class="ce">{{ CATEGORY_EN[entry.category] }}</span>
 				</span>
 				<span class="ctry">
-					<span class="fl">{{ getFlag(entry.country) }}</span>
-					{{ entry.country || '— —' }}
+					<span class="fl">{{ getLangEmoji(entry.language) }}</span>
+					{{ entry.language || '— —' }}
 				</span>
 			</div>
 
@@ -184,7 +184,7 @@ function handleConfirmDelete() {
 						</p>
 						<div class="mt-2 flex flex-wrap gap-1.5">
 							<span class="info-chip">{{ entry.category }}</span>
-							<span v-if="entry.country" class="info-chip">{{ getFlag(entry.country) }} {{ entry.country }}</span>
+							<span v-if="entry.language" class="info-chip">{{ getLangEmoji(entry.language) }} {{ entry.language }}</span>
 							<span v-if="entry.releaseDate" class="info-chip">{{ formatDate(entry.releaseDate) }}</span>
 						</div>
 						<p class="mt-4 text-sm leading-relaxed" style="color: var(--ink-soft)">{{ entry.overview }}</p>

@@ -6,13 +6,19 @@ import type { Entry } from '../types'
 const entries = ref<Entry[]>([])
 const publicEntries = ref<Entry[]>([])
 
+const LEGACY_LANG: Record<string, string> = {
+  '台灣': '中文', '中國': '中文', '日本': '日語', '韓國': '韓語',
+  '美國': '英語', '英國': '英語', '法國': '法語', '泰國': '泰語', '香港': '廣東話',
+}
+
 function toEntry(row: Record<string, unknown>): Entry {
+  const raw = row.country as string
   return {
     id:            row.id             as string,
     title:         row.title          as string,
     titleEn:       row.title_en       as string | undefined,
     category:      row.category       as Entry['category'],
-    country:       row.country        as string,
+    language:      LEGACY_LANG[raw] ?? raw,
     status:        row.status         as Entry['status'],
     rating:        row.rating         as number,
     note:          row.note           as string,
@@ -58,7 +64,8 @@ export function useWatchlist() {
         .from('watchlist_entries')
         .select('*')
         .eq('user_id', uid)
-        .order('created_at', { ascending: true })
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false })
       publicEntries.value = (data ?? []).map(toEntry)
     })
   }
@@ -75,7 +82,7 @@ export function useWatchlist() {
           title:          data.title,
           title_en:       data.titleEn ?? null,
           category:       data.category,
-          country:        data.country,
+          country:        data.language,
           status:         data.status,
           rating:         data.rating,
           note:           data.note,
@@ -106,7 +113,7 @@ export function useWatchlist() {
     if (patch.title    !== undefined) payload.title    = patch.title
     if (patch.titleEn  !== undefined) payload.title_en = patch.titleEn ?? null
     if (patch.category !== undefined) payload.category = patch.category
-    if (patch.country  !== undefined) payload.country  = patch.country
+    if (patch.language !== undefined) payload.country  = patch.language
     if (patch.status   !== undefined) payload.status   = patch.status
     if (patch.rating   !== undefined) payload.rating   = patch.rating
     if (patch.note     !== undefined) payload.note     = patch.note

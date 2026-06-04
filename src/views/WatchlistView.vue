@@ -70,10 +70,10 @@ const preStatusEntries = computed(() =>
 	sourceEntries.value.filter((e) => {
 		const f = activeFilters.value;
 		if (f.category && e.category !== f.category) return false;
-		if (f.country && e.country !== f.country) return false;
+		if (f.language && e.language !== f.language) return false;
 		if (search.value.trim()) {
 			const q = search.value.trim().toLowerCase();
-			return e.title.toLowerCase().includes(q) || (e.titleEn ?? '').toLowerCase().includes(q) || (e.country ?? '').includes(q) || (e.note ?? '').includes(q);
+			return e.title.toLowerCase().includes(q) || (e.titleEn ?? '').toLowerCase().includes(q) || (e.language ?? '').includes(q) || (e.note ?? '').includes(q);
 		}
 		return true;
 	}),
@@ -122,7 +122,7 @@ const groupedUpcoming = computed(() => {
 		}));
 });
 
-const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country || search.value || statusTab.value !== '全部'));
+const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.language || search.value || statusTab.value !== '全部'));
 const canDrag = computed(() => !isFiltered.value && !isReadonly.value && sort.value === '手動排序');
 
 // Stats (whole library)
@@ -162,7 +162,7 @@ const pagedDragEntries = computed({
 });
 const pagedEntries = computed(() => displayEntries.value.slice(pageStart.value, pageStart.value + PAGE_SIZE));
 
-watch([statusTab, search, sort, () => activeFilters.value.category, () => activeFilters.value.country], () => {
+watch([statusTab, search, sort, () => activeFilters.value.category, () => activeFilters.value.language], () => {
 	currentPage.value = 1;
 });
 
@@ -302,7 +302,7 @@ async function copyUrl() {
 		</p>
 
 		<Transition mode="out-in" name="fade">
-			<div :key="`${statusTab}-${activeFilters.category}-${activeFilters.country}-${sort}`">
+			<div :key="`${statusTab}-${activeFilters.category}-${activeFilters.language}-${sort}`">
 				<!-- Empty state -->
 				<EmptyState v-if="displayEntries.length === 0" hint="調整篩選或清除搜尋" message="沒有符合的影片" />
 

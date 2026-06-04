@@ -2,7 +2,7 @@
 import {computed} from 'vue';
 import {Icon} from '@iconify/vue';
 import type {EntryCategory, FilterState} from '../../types';
-import {CATEGORIES, PRESET_COUNTRIES} from '../../types';
+import {CATEGORIES, PRESET_LANGUAGES} from '../../types';
 
 const props = defineProps<{
 	filters: FilterState;
@@ -20,13 +20,13 @@ const emit = defineEmits<{
 }>();
 
 const SORT_OPTIONS = ['手動排序', '最新', '評分', '年份', '名稱'];
-const hasActive = computed(() => !!(props.filters.category || props.filters.country));
+const hasActive = computed(() => !!(props.filters.category || props.filters.language));
 
 function setCategory(c: EntryCategory | '') {
 	if (!props.disabled) emit('update:filters', {...props.filters, category: c});
 }
-function setCountry(e: Event) {
-	if (!props.disabled) emit('update:filters', {...props.filters, country: (e.target as HTMLSelectElement).value});
+function setLanguage(e: Event) {
+	if (!props.disabled) emit('update:filters', {...props.filters, language: (e.target as HTMLSelectElement).value});
 }
 function setSort(e: Event) {
 	emit('update:sort', (e.target as HTMLSelectElement).value);
@@ -37,7 +37,7 @@ function setSort(e: Event) {
 	<!-- Search field -->
 	<div v-if="showSearch" class="field mb-3">
 		<Icon :size="17" icon="mdi:magnify" />
-		<input :value="search" @input="emit('update:search', ($event.target as HTMLInputElement).value)" placeholder="搜尋片名、國家、備註…" />
+		<input :value="search" @input="emit('update:search', ($event.target as HTMLInputElement).value)" placeholder="搜尋片名、語言、備註…" />
 		<button v-if="search" @click="emit('update:search', '')" style="color: var(--ink-faint)" type="button">
 			<Icon class="h-4 w-4" icon="mdi:close" />
 		</button>
@@ -53,18 +53,18 @@ function setSort(e: Event) {
 		</button>
 	</div>
 
-	<!-- Country + Sort dropdowns -->
+	<!-- Language + Sort dropdowns -->
 	<div class="mt-2.5 grid grid-cols-2 gap-2.5">
 		<div class="field sel cursor-pointer">
-			<span class="flex-none font-sans text-[10px] tracking-[.14em] text-ink-faint">地區</span>
-			<span class="flex-1 truncate text-[13px]" style="color: var(--ink)">{{ filters.country || '所有國家' }}</span>
+			<span class="flex-none font-sans text-[10px] tracking-[.14em] text-ink-faint">語言</span>
+			<span class="flex-1 truncate text-[13px]" style="color: var(--ink)">{{ filters.language || '所有語言' }}</span>
 			<select
 				:disabled="disabled"
-				:value="filters.country"
+				:value="filters.language"
 				class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-				@change="setCountry">
-				<option value="">所有國家</option>
-				<option v-for="c in PRESET_COUNTRIES" :key="c" :value="c">{{ c }}</option>
+				@change="setLanguage">
+				<option value="">所有語言</option>
+				<option v-for="lang in PRESET_LANGUAGES" :key="lang" :value="lang">{{ lang }}</option>
 			</select>
 		</div>
 		<div v-if="showSort" class="field sel cursor-pointer">
@@ -83,7 +83,7 @@ function setSort(e: Event) {
 	<button
 		v-if="hasActive && !disabled"
 		class="chip mt-1"
-		@click="emit('update:filters', {category: '', country: '', status: filters.status})"
+		@click="emit('update:filters', {category: '', language: '', status: filters.status})"
 		style="font-size: 11px; color: var(--accent); margin-top: 20px"
 		type="button">
 		<Icon class="mr-0.5 h-3 w-3" icon="mdi:close" />清除篩選

@@ -16,22 +16,22 @@ export const STATUS_META: Record<EntryStatus, { dot: string; en: string }> = {
   '即將上映': { dot: '#7B5EA7', en: 'COMING SOON' },
 }
 
-export const PRESET_COUNTRIES = [
-  '台灣', '日本', '韓國', '美國', '英國', '中國', '法國', '泰國', '香港',
+export const PRESET_LANGUAGES = [
+  '中文', '日語', '韓語', '英語', '法語', '泰語', '廣東話', '西語',
 ] as const
 
-export const COUNTRY_FLAG: Record<string, string> = {
-  '台灣': '🇹🇼', '日本': '🇯🇵', '韓國': '🇰🇷', '美國': '🇺🇸',
-  '英國': '🇬🇧', '中國': '🇨🇳', '法國': '🇫🇷', '泰國': '🇹🇭', '香港': '🇭🇰',
+export const LANGUAGE_EMOJI: Record<string, string> = {
+  '中文': '🇹🇼', '日語': '🇯🇵', '韓語': '🇰🇷', '英語': '🇺🇸',
+  '法語': '🇫🇷', '泰語': '🇹🇭', '廣東話': '🇭🇰', '西語': '🇪🇸',
 }
-export const getFlag = (country: string): string => COUNTRY_FLAG[country] ?? '🎬'
+export const getLangEmoji = (language: string): string => LANGUAGE_EMOJI[language] ?? '🎬'
 
 export interface Entry {
   id: string
   title: string
   titleEn?: string
   category: EntryCategory
-  country: string
+  language: string
   status: EntryStatus
   rating: number
   note: string
@@ -47,7 +47,7 @@ export interface Entry {
 
 export interface FilterState {
   category: EntryCategory | ''
-  country: string
+  language: string
   status: EntryStatus | ''
 }
 

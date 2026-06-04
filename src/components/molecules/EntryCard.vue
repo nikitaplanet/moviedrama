@@ -3,7 +3,7 @@ import {ref, computed, watch} from 'vue';
 import dayjs from 'dayjs';
 import {Icon} from '@iconify/vue';
 import type {Entry} from '../../types';
-import {STATUS_META, CATEGORY_EN, getFlag} from '../../types';
+import {STATUS_META, CATEGORY_EN, getLangEmoji} from '../../types';
 import StarRating from '../atoms/StarRating.vue';
 import AddEntryForm from './AddEntryForm.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
@@ -88,7 +88,7 @@ function handleConfirmDelete() {
 	emit('remove', props.entry.id);
 }
 
-const flag = (c: string) => getFlag(c);
+const flag = (c: string) => getLangEmoji(c);
 
 const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 
@@ -118,8 +118,8 @@ async function copyTitle() {
 					{{ entry.category }}<span class="ce">{{ CATEGORY_EN[entry.category] }}</span>
 				</span>
 				<span class="ctry">
-					<span class="fl">{{ flag(entry.country) }}</span>
-					{{ entry.country || '— —' }}
+					<span class="fl">{{ flag(entry.language) }}</span>
+					{{ entry.language || '— —' }}
 				</span>
 			</div>
 
@@ -251,7 +251,7 @@ async function copyTitle() {
 						</p>
 						<div class="mt-2 flex flex-wrap gap-1.5">
 							<span class="info-chip">{{ entry.category }}</span>
-							<span v-if="entry.country" class="info-chip">{{ getFlag(entry.country) }} {{ entry.country }}</span>
+							<span v-if="entry.language" class="info-chip">{{ getLangEmoji(entry.language) }} {{ entry.language }}</span>
 							<span v-if="entry.releaseDate" class="info-chip">{{ formatDate(entry.releaseDate) }}</span>
 						</div>
 						<p class="mt-4 text-sm leading-relaxed" style="color: var(--ink-soft)">{{ entry.overview }}</p>

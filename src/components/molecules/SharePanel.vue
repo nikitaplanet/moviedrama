@@ -34,7 +34,7 @@ const shareText = computed(() => {
 	const lines = props.entries.map((f, i) => {
 		const n = String(i + 1).padStart(2, '0');
 		const star = f.rating > 0 ? '  ' + '★'.repeat(Math.round(f.rating)) : '';
-		const meta = `［${f.category}］${f.country ? `（${f.country}）` : ''}`;
+		const meta = `［${f.category}］${f.language ? `（${f.language}）` : ''}`;
 		return `${n}  ${f.title}${meta}${star}`;
 	});
 

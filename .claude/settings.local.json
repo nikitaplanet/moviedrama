@@ -25,7 +25,8 @@
       "Bash(pnpm build *)",
       "Bash(grep *)",
       "Bash(python3 *)",
-      "Bash(npx vue-tsc *)"
+      "Bash(npx vue-tsc *)",
+      "Bash(xargs cat *)"
     ]
   }
 }

@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { Icon } from '@iconify/vue'
 import AppDialog from '../atoms/AppDialog.vue'
 import type { Entry } from '../../types'
-import { getFlag } from '../../types'
+import { getLangEmoji } from '../../types'
 import { useAuth } from '../../composables/useAuth'
 import { useEntryShare } from '../../composables/useEntryShare'
 
@@ -62,7 +62,7 @@ async function copy() {
         <div class="min-w-0 flex-1">
           <p class="flex flex-wrap items-center gap-x-1.5 text-[11px] tracking-wide" style="color: var(--ink-soft)">
             <span>{{ entry.category }}</span>
-            <span v-if="entry.country">· {{ getFlag(entry.country) }} {{ entry.country }}</span>
+            <span v-if="entry.language">· {{ getLangEmoji(entry.language) }} {{ entry.language }}</span>
           </p>
           <p class="mt-1.5 text-base font-medium leading-snug tracking-wider" style="color: var(--ink)">{{ entry.title }}</p>
           <p v-if="entry.titleEn || entry.releaseDate" class="mt-0.5 text-[11px] uppercase tracking-wider" style="color: var(--ink-soft)">
