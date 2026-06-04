@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {computed, ref, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
+import dayjs from 'dayjs';
 import {VueDraggable} from 'vue-draggable-plus';
 import {Icon} from '@iconify/vue';
 import type {Entry, FilterState} from '../types';
@@ -43,6 +44,12 @@ const activeFilters = computed<FilterState>(() => filters.value);
 const sourceEntries = computed<Entry[]>(() => (isReadonly.value ? publicEntries.value : entries.value));
 
 const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country));
+
+const lastUpdated = computed(() => {
+	if (!sourceEntries.value.length) return null;
+	const latest = sourceEntries.value.reduce((a, b) => (a.addedAt > b.addedAt ? a : b));
+	return dayjs(latest.addedAt).format('YYYY.MM.DD');
+});
 
 const displayEntries = computed(() =>
 	sourceEntries.value.filter((e) => {
@@ -159,6 +166,12 @@ function trueRank(entry: Entry) {
 			:show-search="false"
 			:show-sort="false"
 			@update:filters="updateFilters" />
+	</div>
+
+	<!-- Result count + last updated -->
+	<div class="resbar flex items-center justify-between">
+		<span>─── {{ displayEntries.length }} 部結果 ───</span>
+		<span v-if="lastUpdated" class="font-sans text-[9px] tracking-[.1em]" style="color: var(--ink-faint)">更新於 {{ lastUpdated }}</span>
 	</div>
 
 	<!-- Filtered hint -->

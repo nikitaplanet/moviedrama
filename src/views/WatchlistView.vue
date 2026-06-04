@@ -48,7 +48,7 @@ const sourceEntries = computed<Entry[]>(() => (isReadonly.value ? publicEntries.
 // --- search + sort ---
 const searchInput = ref('');  // raw input value (immediate)
 const search = ref('');       // debounced value used by filter
-const sort = ref('預設');
+const sort = ref('手動排序');
 
 let searchDebounce: ReturnType<typeof setTimeout>
 watch(searchInput, (val) => {
@@ -97,6 +97,10 @@ const displayEntries = computed(() => {
 	let r = preStatusEntries.value.filter((e) => statusTab.value === '全部' || e.status === statusTab.value);
 	if (sort.value === '最新') r = [...r].sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime());
 	if (sort.value === '評分') r = [...r].sort((a, b) => b.rating - a.rating || (b.year ?? 0) - (a.year ?? 0));
+	if (sort.value === '年份') {
+		const key = (e: Entry) => e.releaseDate ?? (e.year ? `${e.year}-00-00` : '0000-00-00');
+		r = [...r].sort((a, b) => key(b).localeCompare(key(a)));
+	}
 	if (sort.value === '名稱') r = [...r].sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
 	return r;
 });
@@ -119,7 +123,7 @@ const groupedUpcoming = computed(() => {
 });
 
 const isFiltered = computed(() => !!(activeFilters.value.category || activeFilters.value.country || search.value || statusTab.value !== '全部'));
-const canDrag = computed(() => !isFiltered.value && !isReadonly.value && sort.value === '預設');
+const canDrag = computed(() => !isFiltered.value && !isReadonly.value && sort.value === '手動排序');
 
 // Stats (whole library)
 const stats = computed(() => ({
@@ -127,6 +131,12 @@ const stats = computed(() => ({
 	toWatch: sourceEntries.value.filter((e) => e.status === '待看').length,
 	done: sourceEntries.value.filter((e) => e.status === '看完').length,
 }));
+
+const lastUpdated = computed(() => {
+	if (!sourceEntries.value.length) return null;
+	const latest = sourceEntries.value.reduce((a, b) => (a.addedAt > b.addedAt ? a : b));
+	return dayjs(latest.addedAt).format('YYYY.MM.DD');
+});
 
 // Category counts for filter chips
 const categoryCounts = computed(() => {
@@ -281,7 +291,10 @@ async function copyUrl() {
 		</div>
 
 		<!-- Results bar -->
-		<div class="resbar">─── {{ displayEntries.length }} 部結果 ───</div>
+		<div class="resbar flex items-center justify-between">
+			<span>─── {{ displayEntries.length }} 部結果 ───</span>
+			<span v-if="lastUpdated" class="font-sans text-[9px] tracking-[.1em]" style="color: var(--ink-faint)">更新於 {{ lastUpdated }}</span>
+		</div>
 
 		<!-- Hint when drag is suspended -->
 		<p v-if="!canDrag && !isReadonly" class="mb-2 font-sans text-[10px] tracking-[.12em] text-ink-faint">

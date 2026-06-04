@@ -91,6 +91,13 @@ function handleConfirmDelete() {
 const flag = (c: string) => getFlag(c);
 
 const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
+
+const titleCopied = ref(false);
+async function copyTitle() {
+	await navigator.clipboard.writeText(props.entry.title);
+	titleCopied.value = true;
+	setTimeout(() => { titleCopied.value = false; }, 2000);
+}
 </script>
 
 <template>
@@ -229,7 +236,16 @@ const formatDate = (iso: string) => dayjs(iso).format('YYYY.MM.DD');
 						class="h-52 w-full flex-none object-cover object-top sm:aspect-movieCover sm:h-full sm:w-auto" />
 					<!-- Info: below poster on mobile, right column on desktop -->
 					<div class="min-h-0 flex-1 overflow-y-auto p-5">
-						<h2 class="text-xl font-semibold leading-snug" style="color: var(--ink)">{{ entry.title }}</h2>
+						<div class="flex items-center gap-2">
+							<h2 class="text-xl font-semibold leading-snug" style="color: var(--ink)">{{ entry.title }}</h2>
+							<button
+								class="flex-none transition-opacity hover:opacity-60"
+								style="color: var(--ink-faint)"
+								@click="copyTitle"
+								type="button">
+								<Icon :icon="titleCopied ? 'mdi:check' : 'mdi:content-copy'" class="h-3.5 w-3.5" />
+							</button>
+						</div>
 						<p v-if="entry.titleEn" class="mt-0.5 font-sans text-[11px] uppercase tracking-[.18em]" style="color: var(--ink-faint)">
 							{{ entry.titleEn }}
 						</p>

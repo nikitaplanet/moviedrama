@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import {useRouter} from 'vue-router';
 import {Icon} from '@iconify/vue';
 import dayjs from 'dayjs';
@@ -7,6 +7,7 @@ import {useFriends} from '../composables/useFriends';
 import {useAuth} from '../composables/useAuth';
 import AppPageHeader from '../components/organisms/AppPageHeader.vue';
 import EmptyState from '../components/organisms/EmptyState.vue';
+import Pagination from '../components/atoms/Pagination.vue';
 
 const router = useRouter();
 const {user, fetchUsername, fetchRecentProfiles} = useAuth();
@@ -57,6 +58,13 @@ async function submitAdd() {
 		adding.value = false;
 	}
 }
+
+const PAGE_SIZE = 20;
+const currentPage = ref(1);
+const totalPages = computed(() => Math.ceil(friends.value.length / PAGE_SIZE));
+const pagedFriends = computed(() =>
+	friends.value.slice((currentPage.value - 1) * PAGE_SIZE, currentPage.value * PAGE_SIZE),
+);
 
 function viewWatchlist(friendUid: string) {
 	router.push({path: '/watchlist', query: {uid: friendUid}});
@@ -124,7 +132,7 @@ function viewRanking(friendUid: string) {
 		<EmptyState v-if="friends.length === 0" hint="貼上對方的分享連結來新增好友" message="還沒有好友" />
 
 		<div v-else class="flex flex-col">
-			<article v-for="friend in friends" :key="friend.id" class="ticket flex items-center gap-3 px-4 py-3">
+			<article v-for="friend in pagedFriends" :key="friend.id" class="ticket flex items-center gap-3 px-4 py-3">
 				<!-- Avatar -->
 				<button class="flex-none transition-opacity hover:opacity-70" @click="viewRanking(friend.friendUid)" type="button">
 					<img
@@ -160,6 +168,7 @@ function viewRanking(friendUid: string) {
 					</button>
 				</div>
 			</article>
+			<Pagination v-if="totalPages > 1" :page="currentPage" :total="totalPages" @update:page="currentPage = $event" />
 		</div>
 	</div>
 </template>

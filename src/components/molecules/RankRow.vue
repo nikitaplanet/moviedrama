@@ -3,8 +3,7 @@ import {ref, computed, watch} from 'vue';
 import dayjs from 'dayjs';
 import {Icon} from '@iconify/vue';
 import type {Entry} from '../../types';
-import {STATUS_META, CATEGORY_EN, getFlag} from '../../types';
-import StarRating from '../atoms/StarRating.vue';
+import {CATEGORY_EN, getFlag} from '../../types';
 import AddEntryForm from './AddEntryForm.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import ShareEntryDialog from './ShareEntryDialog.vue';
@@ -115,14 +114,8 @@ function handleConfirmDelete() {
 				{{ [entry.titleEn, entry.year].filter(Boolean).join(' · ') }}
 			</div>
 
-			<!-- Mid row: stars · status · actions -->
+			<!-- Mid row: actions -->
 			<div class="midrow">
-				<StarRating :model-value="entry.rating" :size="14" readonly />
-				<span v-if="entry.rating === 0" class="unrated">尚未評分</span>
-				<span class="statuschip">
-					<i :style="{background: STATUS_META[entry.status].dot}" />
-					{{ entry.status }}
-				</span>
 				<span v-if="!readonly" class="ml-auto flex gap-1">
 					<button title="分享給朋友" class="rk-arrow" @click="showShare = true" type="button">
 						<Icon class="h-3.5 w-3.5" icon="mdi:share-variant-outline" />

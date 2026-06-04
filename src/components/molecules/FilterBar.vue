@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	'update:sort': [s: string];
 }>();
 
-const SORT_OPTIONS = ['預設', '最新', '評分', '名稱'];
+const SORT_OPTIONS = ['手動排序', '最新', '評分', '年份', '名稱'];
 const hasActive = computed(() => !!(props.filters.category || props.filters.country));
 
 function setCategory(c: EntryCategory | '') {
@@ -55,16 +55,25 @@ function setSort(e: Event) {
 
 	<!-- Country + Sort dropdowns -->
 	<div class="mt-2.5 grid grid-cols-2 gap-2.5">
-		<div class="field sel">
+		<div class="field sel cursor-pointer">
 			<span class="flex-none font-sans text-[10px] tracking-[.14em] text-ink-faint">地區</span>
-			<select :disabled="disabled" :value="filters.country" @change="setCountry">
+			<span class="flex-1 truncate text-[13px]" style="color: var(--ink)">{{ filters.country || '所有國家' }}</span>
+			<select
+				:disabled="disabled"
+				:value="filters.country"
+				class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+				@change="setCountry">
 				<option value="">所有國家</option>
 				<option v-for="c in PRESET_COUNTRIES" :key="c" :value="c">{{ c }}</option>
 			</select>
 		</div>
-		<div v-if="showSort" class="field sel">
+		<div v-if="showSort" class="field sel cursor-pointer">
 			<span class="flex-none font-sans text-[10px] tracking-[.14em] text-ink-faint">排序</span>
-			<select :value="sort" @change="setSort">
+			<span class="flex-1 truncate text-[13px]" style="color: var(--ink)">{{ sort ?? '手動排序' }}</span>
+			<select
+				:value="sort"
+				class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+				@change="setSort">
 				<option v-for="s in SORT_OPTIONS" :key="s" :value="s">{{ s }}</option>
 			</select>
 		</div>
