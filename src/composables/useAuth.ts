@@ -82,12 +82,12 @@ export function useAuth() {
     if (error) throw error
   }
 
-  async function uploadAvatar(file: File): Promise<void> {
+  async function uploadAvatar(file: Blob): Promise<void> {
     if (!user.value) return
     const uid = user.value.id
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(uid, file, { upsert: true, contentType: file.type })
+      .upload(uid, file, { upsert: true, contentType: 'image/jpeg' })
     if (uploadError) throw uploadError
     const { data } = supabase.storage.from('avatars').getPublicUrl(uid)
     // bust cache with a timestamp query param

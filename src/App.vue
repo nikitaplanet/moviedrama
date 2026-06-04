@@ -10,6 +10,7 @@ import {isLoading} from './lib/loading';
 import AppNav from './components/organisms/AppNav.vue';
 import EditUsernameDialog from './components/molecules/EditUsernameDialog.vue';
 import ChangePasswordDialog from './components/molecules/ChangePasswordDialog.vue';
+import AvatarCropDialog from './components/molecules/AvatarCropDialog.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -40,27 +41,35 @@ const changePasswordError = ref('');
 const uidCopied = ref(false);
 const avatarUploading = ref(false);
 const avatarError = ref('');
+const cropFile = ref<File | null>(null);
+const cropDialogRef = ref<InstanceType<typeof AvatarCropDialog> | null>(null);
 
-async function handleAvatarChange(e: Event) {
+function handleAvatarChange(e: Event) {
 	const file = (e.target as HTMLInputElement).files?.[0];
 	if (!file) return;
 	if (!file.type.startsWith('image/')) {
 		avatarError.value = '請選擇圖片檔案';
 		return;
 	}
-	if (file.size > 2 * 1024 * 1024) {
-		avatarError.value = '圖片不能超過 2MB';
-		return;
-	}
 	avatarError.value = '';
+	cropFile.value = file;
+	cropDialogRef.value?.onFileLoad(file);
+	(e.target as HTMLInputElement).value = '';
+}
+
+function cancelCrop() {
+	cropFile.value = null;
+}
+
+async function confirmCrop(blob: Blob) {
+	cropFile.value = null;
 	avatarUploading.value = true;
 	try {
-		await uploadAvatar(file);
+		await uploadAvatar(blob);
 	} catch {
 		avatarError.value = '上傳失敗，請稍後再試';
 	} finally {
 		avatarUploading.value = false;
-		(e.target as HTMLInputElement).value = '';
 	}
 }
 
@@ -213,6 +222,9 @@ async function handleSignOut() {
 		</main>
 
 		<AppNav v-if="user" />
+
+		<!-- Avatar crop dialog -->
+		<AvatarCropDialog ref="cropDialogRef" :file="cropFile" @confirm="confirmCrop" @cancel="cancelCrop" />
 
 		<!-- Edit username dialog -->
 		<EditUsernameDialog v-model:visible="showEditUsername" :current="username" @confirm="handleUpdateUsername" />
